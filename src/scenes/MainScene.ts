@@ -18,7 +18,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create(): void {
-        this.add.image(400, 300, 'background');
+        this.add.image(1920, 1080, 'background');
 
         // Create player
         this.player = new Player(this, 100, 450);
