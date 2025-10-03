@@ -28,7 +28,7 @@ export default class MainScene extends Phaser.Scene {
         .setScrollFactor(0);
 
     // Platform example
-    this.add.image(width / 2, height - 100, 'platforms')
+    this.add.image(width / 2, height, 'platforms')
         .setOrigin(0.5, 1);
 
     // Overlay (UI-ish)
