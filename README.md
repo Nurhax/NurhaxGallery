@@ -106,7 +106,7 @@ npm run preview
 ---
 
 ## 🧑‍💻 Author
-**Iqbal Nurhaq**  
+**Muhammad Iqbal Nurhaq (Nurhax)**  
 - 🌐 [Portfolio Website](#)  
 - 💼 [LinkedIn](#)  
 - 🐙 [GitHub](#)  
@@ -114,5 +114,6 @@ npm run preview
 ---
 
 ## 📜 License
-MIT License © 2025 Iqbal Nurhaq
+MIT License © 2025 Muhammad Iqbal Nurhaq
+
 
