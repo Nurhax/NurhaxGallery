@@ -1,13 +1,32 @@
 <!DOCTYPE html>
     <html lang="en">
+    
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Gallery Portfolio</title>
     </head>
-    <body>
-        <script type="module" src="/src/main.ts"></script>
-    </body>
+
+
+    <div id ="reader-mode-btn" title="Toggle Reader Mode">
+        📖
+    </div>
+
+    <div id = "reader-overlay">
+        <div class = "reader-content">
+            <h1>Nurhax Portfolio Gallery</h1>
+            <p>Welcome to my portfolio in Reader Mode. Here you'll find:</p>
+            <ul>
+                <li>🎨 Art Portfolio</li>
+                <li>💻 Software Engineering Projects</li>
+                <li>🧪 QA-focused Case Studies</li>
+                <li>🎥 Content Creation</li>
+            </ul>
+            <p>Use the game mode for a playful experience, or stay here for a quick reading.</p>
+        </div>
+    </div>
+
+
 
     <style>
         body, html {
@@ -21,5 +40,68 @@
         canvas {
             display: block;
         }
+
+        /* Reader Mode Button */
+        #reader-mode-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgb(70, 70, 70);
+            color: white;
+            font-size: 20px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            user-select: none;
+        }
+        #reader-mode-btn:hover {
+            background: #2b2b2b;
+        }
+
+        /* Reader Overlay */
+        #reader-overlay {
+            display: none; /* hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #444242;
+            color: #000000;
+            overflow-y: auto;
+            z-index: 999;
+            padding: 40px;
+        }
+
+        .reader-content {
+            max-width: 800px;
+            margin: auto;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .reader-content h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
+
+    <body>
+        <script type="module" src="/src/main.ts"></script>
+        
+        <script>
+            const btn = document.getElementById("reader-mode-btn");
+            const overlay = document.getElementById("reader-overlay");
+
+            btn.addEventListener("click", () => {
+                if (overlay.style.display === "block") {
+                overlay.style.display = "none";
+                } else {
+                overlay.style.display = "block";
+                }
+            });  
+        </script>
+    </body>
+    
 </html>
