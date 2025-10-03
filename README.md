@@ -101,7 +101,7 @@ npm run preview
 ---
 
 ## 📸 Screenshots (WIP)
-*(Add screenshots of your gallery once it’s visually ready)*
+- WIP
 
 ---
 
@@ -115,5 +115,6 @@ npm run preview
 
 ## 📜 License
 MIT License © 2025 Muhammad Iqbal Nurhaq
+
 
 
