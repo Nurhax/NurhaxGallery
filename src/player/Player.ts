@@ -16,8 +16,9 @@ export default class Player {
 
     update(): void {
         const speed = 250;
-        const jumpSpeed = -330;
+        const jumpSpeed = -400;
 
+        //Walking
         if (this.cursors.left?.isDown) {
             this.sprite.setVelocityX(-speed);
             this.sprite.setTexture('player_left');
@@ -30,6 +31,8 @@ export default class Player {
             this.sprite.setVelocityX(0);
         }
 
+
+        // Jumping
         if (this.cursors.up?.isDown && (this.sprite.body as Phaser.Physics.Arcade.Body).blocked.down) {
             this.sprite.setVelocityY(jumpSpeed);
         }

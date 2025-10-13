@@ -49,7 +49,7 @@ export default class MainScene extends Phaser.Scene {
         const playerHeight = playerFrame.height;
         
         // Position so feet are at the floor's top
-        this.player = new Player(this, 350, floorTopY + 50); // 50 is an arbitrary offset to position above the floor
+        this.player = new Player(this, 350, floorTopY); // 50 is an arbitrary offset to position above the floor
         
         // Collisions
         this.physics.add.collider(this.player.sprite, this.platforms);
