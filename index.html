@@ -1,6 +1,9 @@
 <!DOCTYPE html>
     <html lang="en">
     
+    <!--
+    Nurhax Portfolio Gallery
+    -->
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +11,10 @@
     </head>
 
 
+    
+    <!--
+    Reader Mode Button and Overlay
+    -->
     <div id ="reader-mode-btn" title="Toggle Reader Mode">
         📖
     </div>
@@ -40,6 +47,8 @@
         canvas {
             display: block;
         }
+
+       /* Reader Mode Styles */
 
         /* Reader Mode Button */
         #reader-mode-btn {
@@ -100,12 +109,17 @@
             margin-bottom: 20px;
         }
 
+        /* Reader's mode transition */
         @keyframes fadeInContent {
             from { opacity: 0; transform: translateY(10px);}
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 
+
+    <!--
+    Phaser ts scripts and Reader Mode Toggle Script
+    -->
     <body>
         <script type="module" src="/src/main.ts"></script>
         
