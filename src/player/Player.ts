@@ -10,15 +10,12 @@ export default class Player {
         this.sprite.setOrigin(0.5, 1); // anchor at feet
         this.sprite.setCollideWorldBounds(true);
 
-        // Resize player
-        this.sprite.setDisplaySize(350, 350);
-
         // Input
         this.cursors = scene.input!.keyboard!.createCursorKeys();
     }
 
     update(): void {
-        const speed = 200;
+        const speed = 250;
         const jumpSpeed = -330;
 
         if (this.cursors.left?.isDown) {
