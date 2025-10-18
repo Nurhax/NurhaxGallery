@@ -5,8 +5,10 @@ export default class Player {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     private facing: 'left' | 'right' = 'right';
 
+    //Original sprite size 123x220
     constructor(private scene: Phaser.Scene, x: number, y: number) {
         this.sprite = scene.physics.add.sprite(x, y, 'player_right');
+        this.sprite.setScale(0.8);
         this.sprite.setOrigin(0.5, 1); // anchor at feet
         this.sprite.setCollideWorldBounds(true);
 
