@@ -16,7 +16,7 @@ The site is designed as a **2D side-scroller gallery**, where visitors can move 
 - Playable **character with animations** (idle, walk, jump, climb).
 - **Interactive exhibits** that display portfolio projects.
 - **Responsive fullscreen scaling** (no scrollbars).
-- Deployable on **Vercel** or **Netlify** for free hosting.
+- **Reader mode** for people who wants go through the portfolio quickly.
 
 ---
 
