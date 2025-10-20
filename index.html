@@ -22,8 +22,9 @@
     <div id="reader-overlay">
         <div class = "reader-content">
             <div class="reader-main">
-                <h1 style="text-align: left;">Muhammad Iqbal Nurhaq (Nurhax)</h1>
-                <img src="images/Logo Main.png" alt="Logo Main" loading="lazy" style="width:360px; height:360px; border-radius:50%; object-fit:cover; display:block; margin:12px 0;">
+                <h1 style="text-align: left;">Muhammad Iqbal Nurhaq </h1>
+                <h1 style="text-align: left; color: #FDCFFA;">(Nurhax)</h1>
+                <img src="images/Logo Main.png" alt="Logo Main" loading="lazy" style="width:240px; height:240px; border-radius:50%; object-fit:cover; display:block; margin:12px 0;">
                 <h2>Software Engineer</h2>
                 <p>A versatile Software Engineer, QA Tester, and Game Developer who blends deep technical expertise with creative skills in content creation and illustration.</p>
 
@@ -31,6 +32,8 @@
                     <a href="#about">About</a>
                     <a href="#experience">Experience</a>
                     <a href="#projects">Projects</a>
+                    <a href="#art-portfolio">Art Portfolio</a>
+                    <a href="#content-showcase">Content Showcase</a>
                 </nav>
 
                 <a class="social" href="https://github.com/Nurhax" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
@@ -56,17 +59,61 @@
                 <div class="reader-sections">
                     <section id="about">
                         <h2>About</h2>
-                        <p>I’m a developer focused on building accessible, polished digital experiences. This reader mode strips away gameplay elements and surfaces content in a clean, readable layout.</p>
+                        <p>At my core, I am a passionate generalist, driven by an insatiable curiosity for knowledge. I thrive on the challenge of learning, whether it's mastering new development tools, exploring modern frameworks, or understanding different programming languages. This commitment to continuous learning allows me to adapt to new technologies quickly and approach complex challenges with a versatile, well-rounded perspective. I don't just learn for a job; I learn to build a comprehensive understanding of the entire tech landscape.</p>
+                        <p>My professional focus is into Software Engineering, with a special emphasis on building unique, gamified applications.</p>
+                        <p>Complementing my development work is a deep-seated expertise in Quality Assurance (QA) and Software Testing. I view QA not as a final gate, but as a critical mindset woven through the entire development lifecycle. Because I believe that quality is not just a phase, but a continuous process that enhances the user experience and drives product success.</p>
+                        <p>Outside of my professional life, I express my creative and analytical sides through illustration and as a YouTube content creator. My channel explores a unique niche: applying a "philosophical QA approach" to deconstruct and analyze anime and otaku media. Because I believe that storytelling in all its forms deserves the same level of scrutiny and care as software development.</p>
                     </section>
 
                     <section id="experience">
                         <h2>Experience</h2>
-                        <p>Past roles include frontend engineering, accessibility-focused work, and building production web apps. (Placeholder — add your timeline or highlights here.)</p>
+
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <time class="date">Jun 2022 - Present</time>
+                                <div class="meta">
+                                    <h3 class="job-title">Senior Frontend Engineer — Acme Corp</h3>
+                                    <div class="role">Full‑time · Product Team</div>
+                                    <p class="desc">Owned the UI rearchitecture for the core product, improved accessibility, and reduced bundle size. Mentored junior engineers and introduced component-driven development to increase reuse and consistency.</p>
+                                    <div class="tech">Frameworks / Tools: React · TypeScript · Next.js · Storybook · Jest · Cypress</div>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <time class="date">Jan 2020 - May 2022</time>
+                                <div class="meta">
+                                    <h3 class="job-title">Frontend Engineer — Beta Studio</h3>
+                                    <div class="role">Contract · UX / Accessibility</div>
+                                    <p class="desc">Built performant, accessible UIs for enterprise web apps. Led accessibility audits, implemented keyboard-first interactions, and shipped an internal design system used across teams.</p>
+                                    <div class="tech">Frameworks / Tools: Vue.js · JavaScript · Sass · Axe-core · Lighthouse</div>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <time class="date">Aug 2017 - Dec 2019</time>
+                                <div class="meta">
+                                    <h3 class="job-title">Software Engineer — Gamma Labs</h3>
+                                    <div class="role">Full‑stack · Mobile & Web</div>
+                                    <p class="desc">Developed production web applications and lightweight mobile shells for internal tools. Owned end-to-end features from API design to client integration and testing.</p>
+                                    <div class="tech">Frameworks / Tools: Node.js · Express · React Native · MongoDB · Jest</div>
+                                </div>
+                            </div>
+                        </div>
                     </section>
 
                     <section id="projects">
                         <h2>Projects</h2>
                         <p>Selected projects, case studies, and links to demos and repos. (Placeholder — list your most notable projects here.)</p>
+                    </section>
+
+                    <section id="art-portfolio">
+                        <h2>Art Portfolio</h2>
+                        <p>A showcase of my illustration work and creative projects. (Placeholder — add links or images of your art portfolio here.)</p>
+                    </section>
+
+                    <section id="content-showcase">
+                        <h2>Best Content</h2>
+                        <p>A curated selection of my best work across development, QA, and content creation. (Placeholder — highlight your standout achievements here.)</p>
                     </section>
                 </div>
             </aside>
@@ -175,20 +222,20 @@
         pointer-events: auto;
     }
 
-        .reader-content {
-        max-width: none;
-        width: 50%; /* left half */
-        /* make content visually part of overlay: transparent so the overlay's spotlight shows through */
-        background: transparent;
-        margin: 0 24px 36px 24px; /* top 0, right 24, bottom 36, left 24 */
-            font-family: 'Noto Serif JP', serif;
-            line-height: 1.65;
-            animation: fadeInContent 0.56s ease;
-            padding: 8px 12px;
-            border-radius: 8px;
-            box-shadow: none;
-            color: #FDCFFA; /* light text for contrast over dark overlay */
-        }
+    .reader-content {
+    max-width: none;
+    width: 50%; /* left half */
+    /* make content visually part of overlay: transparent so the overlay's spotlight shows through */
+    background: transparent;
+    margin: 0 24px 36px 24px; /* top 0, right 24, bottom 36, left 24 */
+        font-family: 'Noto Serif JP', serif;
+        line-height: 1.65;
+        animation: fadeInContent 0.56s ease;
+        padding: 8px 12px;
+        border-radius: 8px;
+        box-shadow: none;
+        color: #FDCFFA; /* light text for contrast over dark overlay */
+    }
 
     .reader-content h1 {
             text-align: center;
@@ -210,6 +257,10 @@
         align-items: flex-start;
         justify-content: flex-start;
         position: relative; /* allow absolute positioning of inner sections when aligning */
+        /* Make the right column independently scrollable when content is long */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* smooth momentum on iOS */
+        max-height: calc(100vh - 96px); /* leave space for overlay padding */
     }
 
     .reader-details .reader-side { margin-left: 0; }
@@ -246,6 +297,9 @@
         left: 50%;
         transform: translateX(-50%);
         width: calc(100% - 40px);
+        /* When absolutely positioned, allow sections to still scroll inside details */
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
     }
 
     /* Social bar: horizontal */
@@ -273,13 +327,118 @@
 
             btn.addEventListener("click", () => {
                 overlay.classList.toggle("active");
+
+                // When overlay becomes active, position the spotlight using
+                // the last known pointer (or center) and align sections.
+                if (overlay.classList.contains('active')) {
+                    setTimeout(() => {
+                        updateOverlayVars();
+                        alignReaderSections();
+                    }, 80);
+                }
             });  
 
-                        overlay.addEventListener('mousemove', (e) => {
+                        // Robust pointer tracking: keep last pointer coordinates so the
+                        // spotlight can be recomputed if the page scrolls, resizes, or
+                        // the document becomes hidden/visible (minimize/restore).
+                        let lastPointer = { x: null, y: null };
+
+                        // Use pointermove on the document so we capture events even when
+                        // the pointer is outside the overlay element (helps after scroll).
+                        const updatePointerFromEvent = (clientX, clientY) => {
+                            lastPointer.x = clientX;
+                            lastPointer.y = clientY;
+                            updateOverlayVars();
+                        };
+
+                        document.addEventListener('pointermove', (e) => {
+                            // only update when pointer is not a touch contact or when
+                            // overlay is active - still store coords for later.
+                            updatePointerFromEvent(e.clientX, e.clientY);
+                        }, { passive: true });
+
+                        // Compute and set CSS vars relative to the overlay's bounding rect.
+                        function updateOverlayVars() {
+                            if (!overlay) return;
                             const rect = overlay.getBoundingClientRect();
-                            overlay.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
-                            overlay.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+
+                            // If we don't have a stored pointer, center the spotlight in the
+                            // overlay so it is visible when first opened.
+                            let px = lastPointer.x;
+                            let py = lastPointer.y;
+                            if (px === null || py === null) {
+                                px = rect.left + rect.width / 2;
+                                py = rect.top + rect.height / 2;
+                            }
+
+                            // Convert client coords to coordinates relative to overlay
+                            // (so CSS var --mx/--my will be in px from the overlay's top-left).
+                            const relX = Math.round(px - rect.left);
+                            const relY = Math.round(py - rect.top);
+
+                            overlay.style.setProperty('--mx', relX + 'px');
+                            overlay.style.setProperty('--my', relY + 'px');
+                        }
+
+                        // Recompute spotlight on scroll and resize so it stays under the
+                        // cursor. Use passive listeners to avoid jank.
+                        window.addEventListener('scroll', () => {
+                            if (!overlay.classList.contains('active')) return;
+                            updateOverlayVars();
+                        }, { passive: true });
+
+                        window.addEventListener('resize', () => {
+                            if (!overlay.classList.contains('active')) return;
+                            updateOverlayVars();
                         });
+
+                        // When page visibility changes (minimize/restore), the pointer may
+                        // be lost; when becoming visible again, recompute using stored
+                        // coords or center if none.
+                        document.addEventListener('visibilitychange', () => {
+                            if (document.visibilityState === 'visible' && overlay.classList.contains('active')) {
+                                updateOverlayVars();
+                            }
+                        });
+
+                        // Also update when the overlay itself is scrolled (it can be
+                        // scrollable). Use capture to ensure we catch it.
+                        overlay.addEventListener('scroll', () => {
+                            updateOverlayVars();
+                        }, { passive: true, capture: true });
+
+                        // Prevent page/game scroll except when interacting with
+                        // the reader overlay. This keeps the game view
+                        // non-scrollable while allowing the overlay to be
+                        // scrolled when active.
+                        function isEventInsideOverlay(e) {
+                            try {
+                                if (!overlay) return false;
+                                // Prefer composedPath when available
+                                const path = (e.composedPath && e.composedPath()) || (e.path || []);
+                                if (path && path.length) return path.indexOf(overlay) !== -1;
+                                return overlay.contains(e.target);
+                            } catch (err) {
+                                return overlay.contains(e.target);
+                            }
+                        }
+
+                        // Intercept wheel events and prevent default when they
+                        // are not targeting the overlay. passive: false is
+                        // required so we can call preventDefault().
+                        document.addEventListener('wheel', (e) => {
+                            if (!isEventInsideOverlay(e)) {
+                                e.preventDefault();
+                            }
+                        }, { passive: false });
+
+                        // Prevent touchmove from scrolling the game view on
+                        // mobile; allow touch scrolling when inside the overlay.
+                        document.addEventListener('touchmove', (e) => {
+                            if (!isEventInsideOverlay(e)) {
+                                e.preventDefault();
+                            }
+                        }, { passive: false });
 
             // Align right-side reader sections vertically to the center of the left h1
             function alignReaderSections() {
@@ -309,8 +468,7 @@
                 sections.style.top = top + 'px';
             }
 
-            // run when overlay becomes active and on resize
-            btn.addEventListener('click', () => { setTimeout(alignReaderSections, 100); });
+            // run on resize
             window.addEventListener('resize', () => { if (overlay.classList.contains('active')) alignReaderSections(); });
             document.addEventListener('DOMContentLoaded', () => { if (overlay.classList.contains('active')) alignReaderSections(); });
 
