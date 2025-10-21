@@ -10,6 +10,7 @@
         <title>Nurhax Gallery Portfolio</title>
         <link rel="icon" href="images/WebLogo.png" type="image/png">
         <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
 
     <!--
@@ -62,7 +63,7 @@
                         <p>At my core, I am <strong>a passionate generalist</strong> driven by an insatiable curiosity for knowledge, thriving on the challenge of <strong>mastering new tools, frameworks, and languages.</strong> This commitment to continuous learning allows me to adapt quickly and approach complex challenges with a <strong>versatile, well-rounded perspective.</strong></p>
                         <p>My professional focus is <strong>Software Engineering</strong>, with a special emphasis on building unique, <strong>gamified applications</strong>. I aim to develop interactive experiences that are not only functional but also engaging and rewarding for the user</p>
                         <p>Complementing my development work is a deep-seated <strong>expertise in Quality Assurance (QA) and Software Testing</strong>, which I view as a critical mindset woven through the entire lifecycle. I believe quality is a continuous process that enhances the user experience and drives product success, not just a final phase.</p>
-                        <p>Outside of my professional life, I express my <strong>creative and analytical sides through illustration</strong> and as a <strong>YouTube content creator</strong>. My channel applies a <strong>"philosophical QA approach"</strong> to deconstruct anime and otaku media, as I believe storytelling deserves the same level of scrutiny and care as software.</p>
+                        <p>Outside of my professional life, I express my <strong>creative and analytical sides through illustration</strong> and as a <strong>YouTube content creator</strong>. My channel applies a <strong>"philosophical QA approach"</strong> to deconstruct anime and otaku media, as <strong>I believe storytelling deserves the same level of scrutiny and care as software.</strong></p>
                     </section>
 
                     <section id="experience">
@@ -179,7 +180,7 @@
 
                     <section id="projects">
                         <h2>Projects</h2>
-                        <p>Selected projects tailored for showcasing skills, expertise, and creativity.</p>
+                        <p>Selected projects tailored for showcasing <strong>skills, expertise, and creativity.</strong></p>
 
                         <div class="projects-grid" role="list">
                             <a class="project" href="https://github.com/Nurhax/CERDIKMOBILE" target="_blank" rel="noopener noreferrer" role="listitem" aria-label="CERDIK — View repository">
@@ -265,7 +266,7 @@
 
                     <section id="art-portfolio">
                         <h2>Art Portfolio</h2>
-                        <p>A showcase of my illustration work and creative projects. Please click the image to view it full-size.</p>
+                        <p>A showcase of my illustration work and creative projects. <strong>Please click the image to view it full-size.</strong></p>
 
                         <div class="art-grid" role="list">
                             <!-- Replace src values with your artwork images -->
@@ -309,7 +310,7 @@
 
                     <section id="content-showcase">
                         <h2>Content Showcase</h2>
-                        <p>A curated selection of my best content creation works.</p>
+                        <p>A curated selection of my <strong> best content creation works.</strong></p>
 
                         <div class="projects-grid" role="list">
                             <a class="project" href="https://www.youtube.com/watch?v=FqltIqB4Hrw" target="_blank" role="listitem" aria-label="ADO's Latest Facts">
@@ -343,9 +344,6 @@
                             </a>
                         </div>
                     </section>
-
-
-
                 </div>
             </aside>
         </div>
@@ -684,8 +682,12 @@
 
     /* Social bar: horizontal */
     .social-bar { position: fixed; left: 16px; bottom: 16px; display: flex; flex-direction: row; gap: 10px; z-index: 1200; }
-    .social { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border-radius: 10px; color: #FDCFFA; text-decoration: none; transition: transform .12s ease, background .12s ease; }
+    .social { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border-radius: 10px; color: #FDCFFA; text-decoration: none; transition: transform .12s ease, background .12s ease; margin-right: 12px; margin-top: 60px; }
     .social:hover { transform: translateY(-4px); background: rgba(255,255,255,0.06); }
+
+     /* Ensure anchors with the reader-nav class have spacing when next to social icons
+         Targets only anchor elements to avoid changing the nav.reader-nav rules above */
+     a.reader-nav { margin-left: 12px; }
 
         /* Reader's mode transition */
         @keyframes fadeInContent {
@@ -724,7 +726,7 @@
     }
 
     .projects-grid .project-figure {
-        position: relative;
+        position: relative; /* was invalid: 'center' */
         width: 100%;
         padding-top: 56.25%; /* 16:9 ratio */
         background: #0e0e18;
@@ -915,107 +917,107 @@
                 }
             });  
 
-                        // Robust pointer tracking: keep last pointer coordinates so the
-                        // spotlight can be recomputed if the page scrolls, resizes, or
-                        // the document becomes hidden/visible (minimize/restore).
-                        let lastPointer = { x: null, y: null };
+            // Robust pointer tracking: keep last pointer coordinates so the
+            // spotlight can be recomputed if the page scrolls, resizes, or
+            // the document becomes hidden/visible (minimize/restore).
+            let lastPointer = { x: null, y: null };
 
-                        // Use pointermove on the document so we capture events even when
-                        // the pointer is outside the overlay element (helps after scroll).
-                        const updatePointerFromEvent = (clientX, clientY) => {
-                            lastPointer.x = clientX;
-                            lastPointer.y = clientY;
-                            updateOverlayVars();
-                        };
+            // Use pointermove on the document so we capture events even when
+            // the pointer is outside the overlay element (helps after scroll).
+            const updatePointerFromEvent = (clientX, clientY) => {
+                lastPointer.x = clientX;
+                lastPointer.y = clientY;
+                updateOverlayVars();
+            };
 
-                        document.addEventListener('pointermove', (e) => {
-                            // only update when pointer is not a touch contact or when
-                            // overlay is active - still store coords for later.
-                            updatePointerFromEvent(e.clientX, e.clientY);
-                        }, { passive: true });
+            document.addEventListener('pointermove', (e) => {
+                // only update when pointer is not a touch contact or when
+                // overlay is active - still store coords for later.
+                updatePointerFromEvent(e.clientX, e.clientY);
+            }, { passive: true });
 
-                        // Compute and set CSS vars relative to the overlay's bounding rect.
-                        function updateOverlayVars() {
-                            if (!overlay) return;
-                            const rect = overlay.getBoundingClientRect();
+            // Compute and set CSS vars relative to the overlay's bounding rect.
+            function updateOverlayVars() {
+                if (!overlay) return;
+                const rect = overlay.getBoundingClientRect();
 
-                            // If we don't have a stored pointer, center the spotlight in the
-                            // overlay so it is visible when first opened.
-                            let px = lastPointer.x;
-                            let py = lastPointer.y;
-                            if (px === null || py === null) {
-                                px = rect.left + rect.width / 2;
-                                py = rect.top + rect.height / 2;
-                            }
+                // If we don't have a stored pointer, center the spotlight in the
+                // overlay so it is visible when first opened.
+                let px = lastPointer.x;
+                let py = lastPointer.y;
+                if (px === null || py === null) {
+                    px = rect.left + rect.width / 2;
+                    py = rect.top + rect.height / 2;
+                }
 
-                            // Convert client coords to coordinates relative to overlay
-                            // (so CSS var --mx/--my will be in px from the overlay's top-left).
-                            const relX = Math.round(px - rect.left);
-                            const relY = Math.round(py - rect.top);
+                // Convert client coords to coordinates relative to overlay
+                // (so CSS var --mx/--my will be in px from the overlay's top-left).
+                const relX = Math.round(px - rect.left);
+                const relY = Math.round(py - rect.top);
 
-                            overlay.style.setProperty('--mx', relX + 'px');
-                            overlay.style.setProperty('--my', relY + 'px');
-                        }
+                overlay.style.setProperty('--mx', relX + 'px');
+                overlay.style.setProperty('--my', relY + 'px');
+            }
 
-                        // Recompute spotlight on scroll and resize so it stays under the
-                        // cursor. Use passive listeners to avoid jank.
-                        window.addEventListener('scroll', () => {
-                            if (!overlay.classList.contains('active')) return;
-                            updateOverlayVars();
-                        }, { passive: true });
+            // Recompute spotlight on scroll and resize so it stays under the
+            // cursor. Use passive listeners to avoid jank.
+            window.addEventListener('scroll', () => {
+                if (!overlay.classList.contains('active')) return;
+                updateOverlayVars();
+            }, { passive: true });
 
-                        window.addEventListener('resize', () => {
-                            if (!overlay.classList.contains('active')) return;
-                            updateOverlayVars();
-                        });
+            window.addEventListener('resize', () => {
+                if (!overlay.classList.contains('active')) return;
+                updateOverlayVars();
+            });
 
-                        // When page visibility changes (minimize/restore), the pointer may
-                        // be lost; when becoming visible again, recompute using stored
-                        // coords or center if none.
-                        document.addEventListener('visibilitychange', () => {
-                            if (document.visibilityState === 'visible' && overlay.classList.contains('active')) {
-                                updateOverlayVars();
-                            }
-                        });
+            // When page visibility changes (minimize/restore), the pointer may
+            // be lost; when becoming visible again, recompute using stored
+            // coords or center if none.
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible' && overlay.classList.contains('active')) {
+                    updateOverlayVars();
+                }
+            });
 
-                        // Also update when the overlay itself is scrolled (it can be
-                        // scrollable). Use capture to ensure we catch it.
-                        overlay.addEventListener('scroll', () => {
-                            updateOverlayVars();
-                        }, { passive: true, capture: true });
+            // Also update when the overlay itself is scrolled (it can be
+            // scrollable). Use capture to ensure we catch it.
+            overlay.addEventListener('scroll', () => {
+                updateOverlayVars();
+            }, { passive: true, capture: true });
 
-                        // Prevent page/game scroll except when interacting with
-                        // the reader overlay. This keeps the game view
-                        // non-scrollable while allowing the overlay to be
-                        // scrolled when active.
-                        function isEventInsideOverlay(e) {
-                            try {
-                                if (!overlay) return false;
-                                // Prefer composedPath when available
-                                const path = (e.composedPath && e.composedPath()) || (e.path || []);
-                                if (path && path.length) return path.indexOf(overlay) !== -1;
-                                return overlay.contains(e.target);
-                            } catch (err) {
-                                return overlay.contains(e.target);
-                            }
-                        }
+            // Prevent page/game scroll except when interacting with
+            // the reader overlay. This keeps the game view
+            // non-scrollable while allowing the overlay to be
+            // scrolled when active.
+            function isEventInsideOverlay(e) {
+                try {
+                    if (!overlay) return false;
+                    // Prefer composedPath when available
+                    const path = (e.composedPath && e.composedPath()) || (e.path || []);
+                    if (path && path.length) return path.indexOf(overlay) !== -1;
+                    return overlay.contains(e.target);
+                } catch (err) {
+                    return overlay.contains(e.target);
+                }
+            }
 
-                        // Intercept wheel events and prevent default when they
-                        // are not targeting the overlay. passive: false is
-                        // required so we can call preventDefault().
-                        document.addEventListener('wheel', (e) => {
-                            if (!isEventInsideOverlay(e)) {
-                                e.preventDefault();
-                            }
-                        }, { passive: false });
+            // Intercept wheel events and prevent default when they
+            // are not targeting the overlay. passive: false is
+            // required so we can call preventDefault().
+            document.addEventListener('wheel', (e) => {
+                if (!isEventInsideOverlay(e)) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
 
-                        // Prevent touchmove from scrolling the game view on
-                        // mobile; allow touch scrolling when inside the overlay.
-                        document.addEventListener('touchmove', (e) => {
-                            if (!isEventInsideOverlay(e)) {
-                                e.preventDefault();
-                            }
-                        }, { passive: false });
+            // Prevent touchmove from scrolling the game view on
+            // mobile; allow touch scrolling when inside the overlay.
+            document.addEventListener('touchmove', (e) => {
+                if (!isEventInsideOverlay(e)) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
 
             // Align right-side reader sections vertically to the center of the left h1
             function alignReaderSections() {
