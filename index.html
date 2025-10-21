@@ -683,7 +683,7 @@
 
     /* Social bar: horizontal */
     .social-bar { position: fixed; left: 16px; bottom: 16px; display: flex; flex-direction: row; gap: 10px; z-index: 1200; }
-    .social { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border-radius: 10px; color: #FDCFFA; text-decoration: none; transition: transform .12s ease, background .12s ease; margin-right: 12px; margin-top: 60px; }
+    .social { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border-radius: 10px; color: #FDCFFA; text-decoration: none; transition: transform .12s ease, background .12s ease; margin-right: 12px; margin-top: 108px; }
     .social:hover { transform: translateY(-4px); background: rgba(255,255,255,0.06); }
 
      /* Ensure anchors with the reader-nav class have spacing when next to social icons
@@ -788,7 +788,6 @@
     }
 
     .art-item {
-        /* match project card base background exactly */
         background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
         border-radius: 10px;
         overflow: hidden;
@@ -796,19 +795,14 @@
         border: none;
         cursor: pointer;
         display: block;
-        position: relative; /* for ::after spotlight */
-
-        /* spotlight vars (updated via JS) */
-    --mx: 50%;
-    --my: 50%;
-    /* larger and subtler per-card spotlight */
-    --r: 180px;
-        /* subtle default shadow so boxes are visible when inactive */
+        position: relative;
+        --mx: 50%;
+        --my: 50%;
+        --r: 180px;
         box-shadow: 0 6px 14px rgba(8,7,16,0.36);
         transition: box-shadow .18s ease, transform .14s ease;
     }
 
-    /* spotlight layer implemented as a pseudo-element so the base card color stays visible */
     .art-item::after {
         content: '';
         position: absolute;
@@ -832,28 +826,35 @@
     }
 
     .art-item.hovering {
-        --r: 280px; /* broader but subtler spotlight when hovering */
+        --r: 280px;
         box-shadow: 0 14px 34px rgba(8,7,16,0.56);
         transform: translateY(-4px);
     }
 
-    .art-figure { position: relative; width: 100%; padding-top: 75%; background: #0e0e18; }
-    .art-figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; display: block; }
-
-    /* Content showcase images: reuse same rules to ensure centering */
-    #content-showcase .project-figure img,
-    #content-showcase .project-figure img[src] {
-        object-fit: cover !important;
-        object-position: center center !important;
+    .art-figure {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1/1;
+        background: #0e0e18;
+        display: flex;
+        align-items: stretch;
+        justify-content: stretch;
+    }
+    .art-figure img {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
+        object-fit: cover;
+        object-position: center center;
         display: block;
+        border-radius: 0;
     }
-
-    /* Ensure figures enforce their intended aspect ratio and hide overflow */
-    .project-figure, .art-figure {
-        overflow: hidden;
-        position: relative;
+    /* Bootstrap helper for responsive images */
+    .art-figure img {
+        /* Use Bootstrap's .img-fluid for responsive scaling */
+        max-width: 100%;
+        height: 100%;
     }
 
     /* Modal viewer */
