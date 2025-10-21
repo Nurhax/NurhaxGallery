@@ -59,10 +59,10 @@
                 <div class="reader-sections">
                     <section id="about">
                         <h2>About</h2>
-                        <p>At my core, I am a passionate generalist driven by an insatiable curiosity for knowledge, thriving on the challenge of mastering new tools, frameworks, and languages. This commitment to continuous learning allows me to adapt quickly and approach complex challenges with a versatile, well-rounded perspective.</p>
-                        <p>My professional focus is Software Engineering, with a special emphasis on building unique, gamified applications. I aim to develop interactive experiences that are not only functional but also engaging and rewarding for the user</p>
-                        <p>Complementing my development work is a deep-seated expertise in Quality Assurance (QA) and Software Testing, which I view as a critical mindset woven through the entire lifecycle. I believe quality is a continuous process that enhances the user experience and drives product success, not just a final phase.</p>
-                        <p>Outside of my professional life, I express my creative and analytical sides through illustration and as a YouTube content creator. My channel applies a "philosophical QA approach" to deconstruct anime and otaku media, as I believe storytelling deserves the same level of scrutiny and care as software.</p>
+                        <p>At my core, I am <strong>a passionate generalist</strong> driven by an insatiable curiosity for knowledge, thriving on the challenge of <strong>mastering new tools, frameworks, and languages.</strong> This commitment to continuous learning allows me to adapt quickly and approach complex challenges with a <strong>versatile, well-rounded perspective.</strong></p>
+                        <p>My professional focus is <strong>Software Engineering</strong>, with a special emphasis on building unique, <strong>gamified applications</strong>. I aim to develop interactive experiences that are not only functional but also engaging and rewarding for the user</p>
+                        <p>Complementing my development work is a deep-seated <strong>expertise in Quality Assurance (QA) and Software Testing</strong>, which I view as a critical mindset woven through the entire lifecycle. I believe quality is a continuous process that enhances the user experience and drives product success, not just a final phase.</p>
+                        <p>Outside of my professional life, I express my <strong>creative and analytical sides through illustration</strong> and as a <strong>YouTube content creator</strong>. My channel applies a <strong>"philosophical QA approach"</strong> to deconstruct anime and otaku media, as I believe storytelling deserves the same level of scrutiny and care as software.</p>
                     </section>
 
                     <section id="experience">
@@ -246,6 +246,17 @@
                                         <span class="tag">Itch.io</span>
                                     </div>
                                 </div>
+                            </a>
+
+                            <!-- See github -->
+                            <a href="https://github.com/Nurhax" target="_blank" rel="noopener noreferrer" class="reader-nav" style="display:inline-block; margin-top:8px; background:#FDCFFA; color:#202350; padding:10px 18px; border-radius:8px; font-weight:600; text-decoration:none;">
+                                <span style="vertical-align:middle; margin-right:8px;">
+                                    <!-- GitHub logo SVG -->
+                                    <svg width="20" height="20" viewBox="0 0 16 16" fill="#202350" xmlns="http://www.w3.org/2000/svg" style="display:inline;">
+                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82A7.65 7.65 0 018 4.6c.68.003 1.36.092 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                                    </svg>
+                                </span>
+                                View All Projects On GitHub
                             </a>
                         </div>
                     </section>
@@ -724,8 +735,8 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        object-position: center center;
+        object-fit: cover !important;
+        object-position: center center !important;
         display: block;
     }
 
@@ -788,6 +799,9 @@
         --mx: 50%;
         --my: 50%;
         --r: 120px;
+        /* subtle default shadow so boxes are visible when inactive */
+        box-shadow: 0 6px 14px rgba(8,7,16,0.36);
+        transition: box-shadow .18s ease, transform .14s ease;
     }
 
     /* spotlight layer implemented as a pseudo-element so the base card color stays visible */
@@ -815,12 +829,28 @@
 
     .art-item.hovering {
         --r: 220px; /* larger spotlight when hovering */
-        box-shadow: 0 12px 34px rgba(8,7,16,0.66);
+        box-shadow: 0 18px 40px rgba(8,7,16,0.66);
         transform: translateY(-6px);
     }
 
     .art-figure { position: relative; width: 100%; padding-top: 75%; background: #0e0e18; }
     .art-figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; display: block; }
+
+    /* Content showcase images: reuse same rules to ensure centering */
+    #content-showcase .project-figure img,
+    #content-showcase .project-figure img[src] {
+        object-fit: cover !important;
+        object-position: center center !important;
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    /* Ensure figures enforce their intended aspect ratio and hide overflow */
+    .project-figure, .art-figure {
+        overflow: hidden;
+        position: relative;
+    }
 
     /* Modal viewer */
     .art-modal {
