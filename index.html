@@ -23,10 +23,10 @@
     <div id="reader-overlay">
         <div class = "reader-content">
             <div class="reader-main">
-                <h1 style="text-align: left;">Muhammad Iqbal Nurhaq </h1>
-                <h1 style="text-align: left; color: #FDCFFA;">(Nurhax)</h1>
+                <h1 style="text-align: left;"><strong>Muhammad Iqbal Nurhaq</strong></h1>
+                <h1 style="text-align: left; color: #FDCFFA;"><strong>(Nurhax)</strong></h1>
                 <img src="images/Logo Main.png" alt="Logo Main" loading="lazy" style="width:240px; height:240px; border-radius:50%; object-fit:cover; display:block; margin:12px 0;">
-                <h2>Software Engineer</h2>
+                <h2><strong>Software Engineer</strong></h2>
                 <p>A versatile Software Engineer, QA Tester, and Game Developer who blends deep technical expertise with creative skills in content creation and illustration.</p>
 
                 <nav class="reader-nav" aria-label="Reader sections">
@@ -59,7 +59,7 @@
             <aside class="reader-side" style="margin-left: auto;">
                 <div class="reader-sections">
                     <section id="about">
-                        <h2>About</h2>
+                        <h2><strong>About</strong></h2>
                         <p>At my core, I am <strong>a passionate generalist</strong> driven by an insatiable curiosity for knowledge, thriving on the challenge of <strong>mastering new tools, frameworks, and languages.</strong> This commitment to continuous learning allows me to adapt quickly and approach complex challenges with a <strong>versatile, well-rounded perspective.</strong></p>
                         <p>My professional focus is <strong>Software Engineering</strong>, with a special emphasis on building unique, <strong>gamified applications</strong>. I aim to develop interactive experiences that are not only functional but also engaging and rewarding for the user</p>
                         <p>Complementing my development work is a deep-seated <strong>expertise in Quality Assurance (QA) and Software Testing</strong>, which I view as a critical mindset woven through the entire lifecycle. I believe quality is a continuous process that enhances the user experience and drives product success, not just a final phase.</p>
@@ -67,7 +67,7 @@
                     </section>
 
                     <section id="experience">
-                        <h2>Experience</h2>
+                        <h2><strong>Experience</strong></h2>
 
                         <div class="experience-list" role="list">
                             <article class="experience-card" role="listitem">
@@ -179,7 +179,7 @@
 
 
                     <section id="projects">
-                        <h2>Projects</h2>
+                        <h2><strong>Projects</strong></h2>
                         <p>Selected projects tailored for showcasing <strong>skills, expertise, and creativity.</strong></p>
 
                         <div class="projects-grid" role="list">
@@ -265,7 +265,7 @@
                     <!--Nanti disini kasih untuk lihat semua project -->
 
                     <section id="art-portfolio">
-                        <h2>Art Portfolio</h2>
+                        <h2><strong>Art Portfolio</strong></h2>
                         <p>A showcase of my illustration work and creative projects. <strong>Please click the image to view it full-size.</strong></p>
 
                         <div class="art-grid" role="list">
@@ -309,7 +309,7 @@
 
 
                     <section id="content-showcase">
-                        <h2>Content Showcase</h2>
+                        <h2><strong>Content Showcase</strong></h2>
                         <p>A curated selection of my <strong> best content creation works.</strong></p>
 
                         <div class="projects-grid" role="list">
@@ -402,16 +402,17 @@
         color: #101229; /* deep text with purple tone */
 
         /* spotlight vars (JS will update --mx/--my in px; --r can be changed for radius) */
-        --mx: 50%;
-        --my: 50%;
-        --r: 240px;
+    --mx: 50%;
+    --my: 50%;
+    /* larger but less intense spotlight */
+    --r: 420px;
 
         /* layered background: spotlight radial gradient on top of base background */
         background-image:
             radial-gradient(circle var(--r) at var(--mx) var(--my),
-                rgba(255,255,255,0.12) 0%,
-                rgba(255,255,255,0.06) 25%,
-                rgba(255,255,255,0.02) 40%,
+                rgba(255,255,255,0.06) 0%,
+                rgba(255,255,255,0.03) 25%,
+                rgba(255,255,255,0.01) 40%,
                 transparent 65%),
             linear-gradient(#202350, #202350);
 
@@ -435,12 +436,12 @@
 
     /* subtle change when overlay hovered (keeps cursor unchanged) */
     #reader-overlay:hover {
-        /* tint the base a little when hovered */
+        /* tint the base a little when hovered (keeps cursor unchanged) */
         background-image:
             radial-gradient(circle var(--r) at var(--mx) var(--my),
-                rgba(255,255,255,0.18) 0%,
-                rgba(255,255,255,0.08) 25%,
-                rgba(255,255,255,0.03) 45%,
+                rgba(255,255,255,0.10) 0%,
+                rgba(255,255,255,0.05) 25%,
+                rgba(255,255,255,0.02) 45%,
                 transparent 70%),
             linear-gradient(#202350, #202350);
     }
@@ -798,9 +799,10 @@
         position: relative; /* for ::after spotlight */
 
         /* spotlight vars (updated via JS) */
-        --mx: 50%;
-        --my: 50%;
-        --r: 120px;
+    --mx: 50%;
+    --my: 50%;
+    /* larger and subtler per-card spotlight */
+    --r: 180px;
         /* subtle default shadow so boxes are visible when inactive */
         box-shadow: 0 6px 14px rgba(8,7,16,0.36);
         transition: box-shadow .18s ease, transform .14s ease;
@@ -823,16 +825,16 @@
 
     .art-item.hovering::after {
         background-image: radial-gradient(circle var(--r) at var(--mx) var(--my),
-            rgba(255,255,255,0.10) 0%,
-            rgba(255,255,255,0.05) 30%,
-            rgba(255,255,255,0.02) 50%,
+            rgba(255,255,255,0.06) 0%,
+            rgba(255,255,255,0.03) 30%,
+            rgba(255,255,255,0.01) 50%,
             transparent 75%);
     }
 
     .art-item.hovering {
-        --r: 220px; /* larger spotlight when hovering */
-        box-shadow: 0 18px 40px rgba(8,7,16,0.66);
-        transform: translateY(-6px);
+        --r: 280px; /* broader but subtler spotlight when hovering */
+        box-shadow: 0 14px 34px rgba(8,7,16,0.56);
+        transform: translateY(-4px);
     }
 
     .art-figure { position: relative; width: 100%; padding-top: 75%; background: #0e0e18; }
