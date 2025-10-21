@@ -450,6 +450,30 @@
         word-break: break-word;
     }
 
+    /* Thinner, themed scrollbar for the reader details column (WebKit + Firefox) */
+    .reader-details {
+        /* Firefox: thin and themed color (thumb on transparent track) */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(217,199,238,0.38) transparent;
+    }
+
+    /* WebKit/Blink scrollbars (Chrome, Edge, Safari) */
+    .reader-details::-webkit-scrollbar { width: 10px; height: 10px; }
+    .reader-details::-webkit-scrollbar-track { background: transparent; border-radius: 10px; }
+    .reader-details::-webkit-scrollbar-thumb {
+        background: rgba(217,199,238,0.36); /* matches inactive nav tone but subtler */ 
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+    .reader-details::-webkit-scrollbar-thumb:hover {
+        background: rgba(217,199,238,0.6);
+    }
+
+    /* When sections are absolutely positioned inside details, ensure the same scrollbar styles apply */
+    .reader-details .reader-sections.absolute::-webkit-scrollbar { width: 10px; }
+    .reader-details .reader-sections.absolute { scrollbar-width: thin; scrollbar-color: rgba(217,199,238,0.36) transparent; }
+
     .reader-details .reader-side { margin-left: 0; }
 
     /* Make sure headings and meta text are visually left-aligned while
