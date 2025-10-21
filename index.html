@@ -474,9 +474,49 @@
     .reader-main { margin-top: 0; }
     .reader-side { width: 320px; flex: 0 0 320px; }
     .reader-content h2 { color: #D78FEE; margin-top: 22px; margin-bottom: 8px; }
-    .reader-nav { display: flex; flex-direction: column; gap: 12px; margin: 12px 0 20px; }
-    .reader-nav a { color: #202350; background: #FDCFFA; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; }
-    .reader-nav a:hover { background: #D78FEE; color: #202350; }
+    /* Reader navigation: show as minimal list with a dash before each section
+       - Use nav.reader-nav specifically so other elements that reuse the .reader-nav class (e.g., CTA links)
+         are not affected
+       - Active link lights up; inactive links use a darker, consistent reader color
+       - Hover pops the item out and visually becomes active */
+    nav.reader-nav { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 20px; }
+    nav.reader-nav a {
+        color: rgba(217,199,238,0.9); /* darker but harmonious with reader palette */
+        background: transparent; /* remove boxed look */
+        padding: 0; /* remove boxed padding */
+        border-radius: 0;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+        position: relative;
+        transition: transform 0.16s ease, color 0.16s ease, text-shadow 0.16s ease;
+        will-change: transform, color;
+        padding-left: 6px; /* space for dash */
+    }
+
+    /* Insert an em-dash before the link text */
+    nav.reader-nav a::before {
+        content: "—"; /* long dash */
+        display: inline-block;
+        margin-right: 10px;
+        color: #D78FEE; /* subtle accent for the dash */
+        font-weight: 700;
+        transform-origin: left center;
+    }
+
+    /* Active state: light up and pop slightly to the right */
+    nav.reader-nav a.active {
+        color: #FDCFFA; /* bright light text */
+        transform: translateX(6px);
+        text-shadow: 0 2px 8px rgba(253,207,250,0.08);
+    }
+
+    /* Hover: pop out and adopt active visual state while hovering */
+    nav.reader-nav a:hover {
+        transform: translateX(6px) scale(1.02);
+        color: #FDCFFA;
+        cursor: pointer;
+    }
 
     section { margin-bottom: 18px; }
 
@@ -942,6 +982,80 @@
                 });
             })();
         </script>
+
+        <script>
+            // Reader nav: smooth scroll, active state, and scrollspy inside the reader overlay
+            (function(){
+                const overlay = document.getElementById('reader-overlay');
+                const nav = document.querySelector('nav.reader-nav');
+                if (!nav) return;
+
+                const links = Array.from(nav.querySelectorAll('a[href^="#"]'));
+                const idToLink = new Map();
+                const sections = [];
+
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (!href || !href.startsWith('#')) return;
+                    const id = href.slice(1);
+                    const section = document.getElementById(id);
+                    if (section) {
+                        idToLink.set(id, link);
+                        sections.push(section);
+                    }
+
+                    // click -> smooth scroll and set active immediately
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (!section) return;
+                        // If overlay isn't active, open it first so scrolling works
+                        if (overlay && !overlay.classList.contains('active')) {
+                            overlay.classList.add('active');
+                            // small timeout to allow layout and then scroll
+                            setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+                        } else {
+                            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+
+                        // visually set active state on click
+                        links.forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                        // update hash without jumping
+                        try { history.replaceState(null, '', '#'+id); } catch (err) {}
+                    });
+                });
+
+                // Use IntersectionObserver to highlight the link for the section currently centered in the overlay
+                if (sections.length && overlay) {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            const id = entry.target.id;
+                            const link = idToLink.get(id);
+                            if (!link) return;
+                            // Use intersection ratio or isIntersecting to decide
+                            if (entry.isIntersecting && entry.intersectionRatio > 0.45) {
+                                links.forEach(l => l.classList.remove('active'));
+                                link.classList.add('active');
+                            }
+                        });
+                    }, {
+                        root: overlay,
+                        rootMargin: '0px 0px -40% 0px',
+                        threshold: [0.45, 0.6]
+                    });
+
+                    sections.forEach(s => observer.observe(s));
+                }
+
+                // If a hash exists on load and matches a section, mark it active
+                document.addEventListener('DOMContentLoaded', () => {
+                    const hash = (location.hash || '').replace('#','');
+                    if (hash && idToLink.has(hash)) {
+                        links.forEach(l => l.classList.remove('active'));
+                        idToLink.get(hash).classList.add('active');
+                    }
+                });
+            })();
         </script>
     </body>
     
