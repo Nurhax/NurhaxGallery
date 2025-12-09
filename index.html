@@ -70,7 +70,6 @@
 
                     <section id="experience">
                         <h2><strong>Experience</strong></h2>
-
                         <div class="experience-list" role="list">
                             <article class="experience-card" role="listitem">
                                 <div class="exp-grid">
@@ -81,6 +80,22 @@
                                         <div class="exp-tech">
                                             <span class="tag">JMeter</span>
                                             <span class="tag">Katalon Studio</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="experience-card" role="listitem">
+                                <div class="exp-grid">
+                                    <div class="exp-date">Nov 2025 - Feb 2026</div>
+                                    <div class="exp-title">Quality Assurance (Game Tester) Intern — Agate</div>
+                                    <div class="exp-body">
+                                        <p class="exp-desc">Game testing and quality assurance for an isometric RPG game, ensuring bug-free releases and optimal user experience.</p>
+                                        <div class="exp-tech">
+                                            <span class="tag">JIRA</span>
+                                            <span class="tag">Unreal Engine</span>
+                                            <span class="tag">Test Case Automation</span>
+                                            <span class="tag">AIO Jira Extension</span>
                                         </div>
                                     </div>
                                 </div>
@@ -636,7 +651,7 @@
     /* Two-column grid for experience: fixed date column + content column */
     .exp-grid {
         display: grid;
-        grid-template-columns: 160px 1fr;
+        grid-template-columns: 180px 1fr;
         gap: 12px 18px;
         align-items: start;
     }
@@ -733,6 +748,8 @@
         width: 100%;
         padding-top: 56.25%; /* 16:9 ratio */
         background: #0e0e18;
+        margin: 0;
+        display: block;
     }
 
     .projects-grid .project-figure img {
@@ -743,6 +760,8 @@
         object-fit: cover !important;
         object-position: center center !important;
         display: block;
+        margin: 0;
+        padding: 0;
     }
 
     .projects-grid .project-meta {
@@ -794,6 +813,7 @@
         border-radius: 10px;
         overflow: hidden;
         padding: 0;
+        line-height: 0; /* remove inline whitespace from buttons */
         border: none;
         cursor: pointer;
         display: block;
@@ -841,6 +861,8 @@
         display: flex;
         align-items: stretch;
         justify-content: stretch;
+        margin: 0;
+        padding: 0;
     }
     .art-figure img {
         position: absolute;
@@ -850,7 +872,9 @@
         object-fit: cover;
         object-position: center center;
         display: block;
-        border-radius: 0;
+        border-radius: inherit; /* match the parent rounding */
+        margin: 0;
+        padding: 0;
     }
     /* Bootstrap helper for responsive images */
     .art-figure img {

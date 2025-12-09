@@ -88,10 +88,10 @@ export default class MainScene extends Phaser.Scene {
             .setScrollFactor(0);
 
         // Play background music (looped). Keep a reference so we can stop/destroy it on shutdown.
-        if (this.sound && this.cache.audio.exists('bgm')) {
-            this.bgm = this.sound.add('bgm', { loop: true, volume: 0.1 });
-            this.bgm.play();
-        }
+        // if (this.sound && this.cache.audio.exists('bgm')) {
+        //     this.bgm = this.sound.add('bgm', { loop: true, volume: 0.1 });
+        //     this.bgm.play();
+        // }
 
         // Clean up music when the scene shuts down (prevents duplicates on restart)
         this.events.on('shutdown', () => {
