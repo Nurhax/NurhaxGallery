@@ -90,7 +90,7 @@
                                     <div class="exp-date">Nov 2025 - Feb 2026</div>
                                     <div class="exp-title">Quality Assurance (Game Tester) Intern — Agate</div>
                                     <div class="exp-body">
-                                        <p class="exp-desc">Game testing and quality assurance for an isometric RPG game, ensuring bug-free releases and optimal user experience.</p>
+                                        <p class="exp-desc">Manual Game Tester — Game testing and Quality Assurance for an isometric RPG game, ensuring bug-free releases and optimal user experience.</p>
                                         <div class="exp-tech">
                                             <span class="tag">JIRA</span>
                                             <span class="tag">Unreal Engine</span>
@@ -1285,23 +1285,122 @@
                 // Use IntersectionObserver to highlight the link for the section currently centered in the overlay
                 if (sections.length && overlay) {
                     const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            const id = entry.target.id;
-                            const link = idToLink.get(id);
-                            if (!link) return;
-                            // Use intersection ratio or isIntersecting to decide
-                            if (entry.isIntersecting && entry.intersectionRatio > 0.45) {
-                                links.forEach(l => l.classList.remove('active'));
-                                link.classList.add('active');
+                        // Determine which intersecting section is closest to the vertical center
+                        // of the overlay and mark that one active. This is more robust than
+                        // relying solely on intersectionRatio thresholds which can miss
+                        // long or tall sections (like the Experience list) when quickly scrolling.
+                        try {
+                            const overlayRect = overlay.getBoundingClientRect();
+                            const overlayCenterY = overlayRect.top + overlayRect.height / 2;
+
+                            let closest = null;
+                            let closestDistance = Infinity;
+
+                            entries.forEach(entry => {
+                                if (!entry.isIntersecting) return;
+                                const rect = entry.boundingClientRect;
+                                const entryCenterY = rect.top + rect.height / 2;
+                                const distance = Math.abs(entryCenterY - overlayCenterY);
+                                if (distance < closestDistance) {
+                                    closestDistance = distance;
+                                    closest = entry;
+                                }
+                            });
+
+                            if (closest) {
+                                const id = closest.target.id;
+                                const link = idToLink.get(id);
+                                if (link) {
+                                    links.forEach(l => l.classList.remove('active'));
+                                    link.classList.add('active');
+                                }
                             }
-                        });
+                        } catch (err) {
+                            // Fallback: if anything goes wrong, fall back to original behavior
+                            entries.forEach(entry => {
+                                const id = entry.target.id;
+                                const link = idToLink.get(id);
+                                if (!link) return;
+                                if (entry.isIntersecting) {
+                                    links.forEach(l => l.classList.remove('active'));
+                                    link.classList.add('active');
+                                }
+                            });
+                        }
                     }, {
                         root: overlay,
-                        rootMargin: '0px 0px -40% 0px',
-                        threshold: [0.45, 0.6]
+                        // Narrow the observed central band so sections are considered when
+                        // they cross the middle area of the overlay.
+                        rootMargin: '-40% 0px -40% 0px',
+                        // Use multiple thresholds so we get frequent updates as sections
+                        // move through the central band.
+                        threshold: [0, 0.25, 0.5, 0.75, 1]
                     });
 
                     sections.forEach(s => observer.observe(s));
+
+                    // Scroll-based fallback: compute the section whose center
+                    // is closest to the overlay vertical center and mark it active.
+                    // This handles some edge cases where IntersectionObserver
+                    // callbacks may not fire consistently when quickly scrolling
+                    // in either direction.
+                    const updateActiveSection = () => {
+                        if (!overlay) return;
+                        const overlayRect = overlay.getBoundingClientRect();
+                        const overlayCenterY = overlayRect.top + overlayRect.height / 2;
+
+                        let closestId = null;
+                        let minDist = Infinity;
+
+                        sections.forEach(s => {
+                            const rect = s.getBoundingClientRect();
+                            // If element has zero height, skip
+                            if (!rect.height) return;
+                            const centerY = rect.top + rect.height / 2;
+                            const dist = Math.abs(centerY - overlayCenterY);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                closestId = s.id;
+                            }
+                        });
+
+                        if (closestId && idToLink.has(closestId)) {
+                            links.forEach(l => l.classList.remove('active'));
+                            idToLink.get(closestId).classList.add('active');
+                        }
+                    };
+
+                    let rafScheduled = false;
+                    const onOverlayScroll = () => {
+                        if (rafScheduled) return;
+                        rafScheduled = true;
+                        requestAnimationFrame(() => {
+                            rafScheduled = false;
+                            updateActiveSection();
+                        });
+                    };
+
+                    if (overlay) {
+                        overlay.addEventListener('scroll', onOverlayScroll, { passive: true });
+                        // Also listen for wheel/touchmove on the document because some
+                        // input methods don't always fire overlay.scroll in the same
+                        // phase when quickly moving from top->down. These feed into
+                        // the same throttled handler.
+                        document.addEventListener('wheel', (e) => { if (overlay.classList.contains('active')) onOverlayScroll(); }, { passive: true });
+                        document.addEventListener('touchmove', (e) => { if (overlay.classList.contains('active')) onOverlayScroll(); }, { passive: true });
+
+                        // Keyboard navigation (arrows/page keys) should also update active state
+                        document.addEventListener('keydown', (e) => {
+                            if (!overlay.classList.contains('active')) return;
+                            const keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End'];
+                            if (keys.indexOf(e.key) !== -1) onOverlayScroll();
+                        });
+
+                        // Also update on resize and when overlay becomes active
+                        window.addEventListener('resize', () => { if (overlay.classList.contains('active')) updateActiveSection(); });
+                        // initial call to set correct active on load
+                        setTimeout(updateActiveSection, 120);
+                    }
                 }
 
                 // If a hash exists on load and matches a section, mark it active
