@@ -241,6 +241,8 @@ export const LIBRARY: LibrarySection[] = [
                 blurb: 'More illustrations, sketches and works in progress.',
                 url: 'https://www.instagram.com/nurhax.dev/',
                 linkLabel: 'Open Instagram',
+                coverKey: 'cover_instagram',
+                coverPath: 'images/Main Logo.png',
             },
         ],
     },
@@ -257,6 +259,8 @@ export const LIBRARY: LibrarySection[] = [
                 tags: ['YouTube', 'Music analysis'],
                 url: 'https://www.youtube.com/watch?v=FqltIqB4Hrw',
                 linkLabel: 'Watch on YouTube',
+                coverKey: 'cover_ado',
+                coverPath: 'images/AdoThumb.png',
             },
             {
                 kind: 'content',
@@ -266,6 +270,8 @@ export const LIBRARY: LibrarySection[] = [
                 tags: ['YouTube', 'Anime analysis'],
                 url: 'https://www.youtube.com/watch?v=BsfFqoGR6HM',
                 linkLabel: 'Watch on YouTube',
+                coverKey: 'cover_friendzone',
+                coverPath: 'images/FriendzoneThumb.png',
             },
             {
                 kind: 'link',
@@ -274,6 +280,8 @@ export const LIBRARY: LibrarySection[] = [
                 blurb:
                     'A "philosophical QA approach" to anime and otaku media — because storytelling deserves the same scrutiny and care as software.',
                 url: 'https://www.youtube.com/@Nurhax/',
+                coverKey: 'cover_youtube',
+                coverPath: 'images/Main Logo.png',
                 linkLabel: 'Open channel',
             },
         ],

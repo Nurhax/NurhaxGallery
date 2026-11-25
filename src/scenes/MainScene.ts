@@ -67,10 +67,10 @@ export default class MainScene extends Phaser.Scene {
         });
 
         const hint = this.add.text(width - 520, floorTopY - 420, 'Follow the light  →', {
-            fontFamily: FONT,
+            fontFamily: 'Kozuka Gothic Pro, Regular',
             fontSize: '30px',
-            color: '#fff1c9',
-            stroke: '#000000',
+            color: '#d78fee',
+            stroke: 'FFFFFF',
             strokeThickness: 5,
         }).setOrigin(0.5).setDepth(60).setAlpha(0);
         this.tweens.add({ targets: hint, alpha: 0.9, delay: 2500, duration: 1500, yoyo: true, hold: 3000 });
