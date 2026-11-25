@@ -4,6 +4,8 @@ export default class Player {
     public sprite: Phaser.Physics.Arcade.Sprite;
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     private facing: 'left' | 'right' = 'right';
+    private locked = false;
+    private autoDir: -1 | 0 | 1 = 0;
 
     //Original sprite size 123x220
     constructor(private scene: Phaser.Scene, x: number, y: number) {
@@ -16,85 +18,75 @@ export default class Player {
         this.cursors = scene.input!.keyboard!.createCursorKeys();
     }
 
+    /** 1 = facing right, -1 = facing left */
+    get facingDir(): 1 | -1 {
+        return this.facing === 'right' ? 1 : -1;
+    }
+
+    /** Torso position, handy for aiming and hit tests. */
+    get center(): Phaser.Math.Vector2 {
+        return new Phaser.Math.Vector2(this.sprite.x, this.sprite.y - this.sprite.displayHeight * 0.5);
+    }
+
+    /** Ignore keyboard input (cutscenes, menus, game over). */
+    setLocked(locked: boolean): void {
+        this.locked = locked;
+    }
+
+    /** Walk by itself (used by scene transitions). */
+    autoWalk(dir: -1 | 1): void {
+        this.autoDir = dir;
+    }
+
+    stopAuto(): void {
+        this.autoDir = 0;
+    }
+
     update(): void {
         const baseSpeed = 250;
         const sprintSpeed = 400; // when Shift is held
         const jumpSpeed = -500;
 
-        // Animation frame rates
+        // Animation speed
         const baseFrameRate = 12;
         const sprintFrameRate = 20;
 
-        const isSprinting = !!this.cursors.shift?.isDown;
-        const speed = isSprinting ? sprintSpeed : baseSpeed;
-        const animFrameRate = isSprinting ? sprintFrameRate : baseFrameRate;
+        let dir: -1 | 0 | 1 = 0;
+        let sprint = false;
+        let jump = false;
 
-        //Walking
-        if (this.cursors.left?.isDown) {
-            this.sprite.setVelocityX(-speed);
-            this.facing = 'left';
-            // Play left-run animation if available, otherwise fall back to flipping the right-run or using the left idle
-            if (this.sprite.anims.currentAnim?.key !== 'run_left') {
-                if (this.scene.anims.exists('run_left')) {
-                    // Play and then apply the desired frameRate when sprinting
-                    this.sprite.anims.play('run_left', true);
-                    if (this.sprite.anims.currentAnim) {
-                        this.sprite.anims.currentAnim.frameRate = animFrameRate;
-                    }
-                } else if (this.scene.anims.exists('run_right')) {
-                    this.sprite.anims.play('run_right', true);
-                    if (this.sprite.anims.currentAnim) {
-                        this.sprite.anims.currentAnim.frameRate = animFrameRate;
-                    }
-                    this.sprite.setFlipX(true);
-                }
-            } else {
-                // If already playing, ensure the animation plays at the correct frameRate when sprint state changes
-                if (this.sprite.anims.currentAnim) {
-                    this.sprite.anims.currentAnim.frameRate = animFrameRate;
-                }
-            }
-        } else if (this.cursors.right?.isDown) {
-            this.sprite.setVelocityX(speed);
-            this.facing = 'right';
-            if (this.sprite.anims.currentAnim?.key !== 'run_right') {
-                if (this.scene.anims.exists('run_right')) {
-                    this.sprite.anims.play('run_right', true);
-                    if (this.sprite.anims.currentAnim) {
-                        this.sprite.anims.currentAnim.frameRate = animFrameRate;
-                    }
-                } else if (this.scene.anims.exists('run_left')) {
-                    this.sprite.anims.play('run_left', true);
-                    if (this.sprite.anims.currentAnim) {
-                        this.sprite.anims.currentAnim.frameRate = animFrameRate;
-                    }
-                    this.sprite.setFlipX(true);
-                }
-            } else {
-                if (this.sprite.anims.currentAnim) {
-                    this.sprite.anims.currentAnim.frameRate = animFrameRate;
-                }
-            }
-            this.sprite.setFlipX(false);
-        } else {
-            this.sprite.setVelocityX(0);
-            // Stop running animation and set idle texture based on facing
-            // Stop run animations (either run_right or run_left)
-            if (this.sprite.anims.currentAnim && (this.sprite.anims.currentAnim.key === 'run_right' || this.sprite.anims.currentAnim.key === 'run_left')) {
-                this.sprite.anims.stop();
-            }
-            if (this.facing === 'left') {
-                this.sprite.setTexture('player_left');
-                this.sprite.setFlipX(false); // idle left uses dedicated left texture
-            } else {
-                this.sprite.setTexture('player_right');
-                this.sprite.setFlipX(false);
-            }
+        if (this.autoDir !== 0) {
+            dir = this.autoDir;
+        } else if (!this.locked) {
+            dir = this.cursors.left?.isDown ? -1 : this.cursors.right?.isDown ? 1 : 0;
+            sprint = !!this.cursors.shift?.isDown;
+            jump = !!this.cursors.up?.isDown;
         }
 
+        const speed = sprint ? sprintSpeed : baseSpeed;
+
+        if (dir !== 0) {
+            this.sprite.setVelocityX(dir * speed);
+            this.facing = dir < 0 ? 'left' : 'right';
+            const key = dir < 0 ? 'run_left' : 'run_right';
+            if (this.scene.anims.exists(key)) {
+                this.sprite.setFlipX(false);
+                this.sprite.anims.play(key, true);
+                this.sprite.anims.timeScale = sprint ? sprintFrameRate / baseFrameRate : 1;
+            } else {
+                // Fallback: no run sheet loaded, just use the idle picture
+                this.sprite.setTexture(dir < 0 ? 'player_left' : 'player_right');
+            }
+        } else {
+            this.sprite.setVelocityX(0);
+            if (this.sprite.anims.isPlaying) this.sprite.anims.stop();
+            this.sprite.setTexture(this.facing === 'left' ? 'player_left' : 'player_right');
+            this.sprite.setFlipX(false);
+        }
 
         // Jumping
-        if (this.cursors.up?.isDown && (this.sprite.body as Phaser.Physics.Arcade.Body).blocked.down) {
+        const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+        if (jump && (body.blocked.down || body.touching.down)) {
             this.sprite.setVelocityY(jumpSpeed);
         }
     }

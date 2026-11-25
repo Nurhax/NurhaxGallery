@@ -993,17 +993,6 @@
     <body>
         <script type="module" src="/src/main.ts"></script>
 
-        <!-- Game WIP overlay: blocks the game canvas until the user opens Reader Mode -->
-        <div id="game-wip-overlay" style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:950; pointer-events:auto; background: rgba(0,0,0,0.45);">
-            <div class="wip-block" role="alert" aria-live="polite" style="max-width:520px;">
-                <h3 class="wip-title">Nurhax Portfolio Gallery (Work In Progress)</h3>
-                <p class="wip-note">The game area is currently blocked. Click the Reader Mode button (📖) at the top-right to view the portfolio and details.</p>
-                <div style="display:flex; gap:10px; margin-top:10px; justify-content:center;">
-                    <button id="open-reader-btn" class="wip-btn">Open Reader Mode</button>
-                </div>
-            </div>
-        </div>
-
         <script>
             const btn = document.getElementById("reader-mode-btn");
             const overlay = document.getElementById("reader-overlay");
@@ -1197,31 +1186,7 @@
             document.addEventListener('DOMContentLoaded', attachArtItemSpotlights);
         </script>
 
-        <!-- Small helper script: wire the WIP overlay button to open the reader and hide overlay while reader is active -->
-        <script>
-            (function(){
-                const gameOverlay = document.getElementById('game-wip-overlay');
-                const readerBtn = document.getElementById('reader-mode-btn');
-                const readerOverlay = document.getElementById('reader-overlay');
-                const openBtn = document.getElementById('open-reader-btn');
-
-                if (openBtn && readerBtn) {
-                    openBtn.addEventListener('click', () => readerBtn.click());
-                }
-
-                if (gameOverlay && readerOverlay) {
-                    const mo = new MutationObserver(() => {
-                        const active = readerOverlay.classList.contains('active');
-                        gameOverlay.style.display = active ? 'none' : 'flex';
-                    });
-                    mo.observe(readerOverlay, { attributes: true, attributeFilter: ['class'] });
-                    // initial state
-                    gameOverlay.style.display = readerOverlay.classList.contains('active') ? 'none' : 'flex';
-                }
-            })();
-        </script>
-
-        <!-- Art modal markup -->
+                <!-- Art modal markup -->
         <div class="art-modal" id="art-modal" role="dialog" aria-modal="true" aria-hidden="true">
             <div class="frame" role="document">
                 <button class="close-btn" id="art-modal-close" aria-label="Close image">✕</button>

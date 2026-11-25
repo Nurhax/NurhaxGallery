@@ -33,3 +33,15 @@ The site is designed as a **2D side-scroller gallery**, where visitors can move 
 MIT © 2025 Muhammad Iqbal Nurhaq
 
 ---
+
+## 🗺️ The journey
+
+1. **Cave** – walk right, into the light.
+2. **Work Gallery** – one big painting per job (oldest → newest), ends at a door.
+3. **Library** – stand near a glowing book and press **E**: projects, art portfolio, content showcase.
+4. **Storm Vault** – lightning-powered survival. **Z / click** bolt, **X** chain lightning. Submit your name + score when you fall.
+
+Reader Mode (📖) is optional and pauses the game while open. Add `#gallery`, `#library` or `#storm` to the URL to jump straight to a scene while developing.
+
+### High scores
+Scores are stored in the browser (`localStorage`) by default. For a shared leaderboard, set `VITE_HIGHSCORE_URL` (see `.env.example` and `src/services/highscores.ts` for the tiny GET/POST contract).
