@@ -8,6 +8,7 @@ import { LIBRARY, BookEntry } from '../data/portfolio';
 import { createPlayerAnimations } from '../utils/animations';
 import { ensureLibraryTextures } from '../utils/textures';
 import { walkThroughDoor } from '../utils/transitions';
+import { CARDS } from './TransitionScene';
 
 const BOOK_GAP = 340;
 const SECTION_GAP = 520;
@@ -15,6 +16,8 @@ const FIRST_BOOK_X = 1000;
 /** Top of the shelf plank at eye level (see ensureLibraryTextures: planks at 150*i + 142). */
 const SHELF_Y = 742;
 const REACH = 130;
+/** A book's quote appears when you walk within this distance of it. */
+const QUOTE_RANGE = 270;
 
 /** Scene 3: library. Every interactive book is a project, an artwork or a video. Ends at a restricted door. */
 export default class LibraryScene extends Phaser.Scene {
@@ -23,6 +26,8 @@ export default class LibraryScene extends Phaser.Scene {
     private focus?: Book;
     private panel!: BookPanel;
     private tip!: Phaser.GameObjects.Text;
+    private quoteBox!: Phaser.GameObjects.Text;
+    private quoteBook?: Book;
     private keyE!: Phaser.Input.Keyboard.Key;
     private door!: Doorway;
     private doorX = 0;
@@ -32,10 +37,16 @@ export default class LibraryScene extends Phaser.Scene {
         super('LibraryScene');
     }
 
+    /** No pausing during the door cutscene, or on the same Esc press that closed a book. */
+    canPause(): boolean {
+        return !this.leaving && !this.panel?.isOpen && this.time.now - (this.panel?.closedAt ?? -1e9) > 250;
+    }
+
     create(): void {
         this.leaving = false;
         this.books = [];
         this.focus = undefined;
+        this.quoteBook = undefined;
         createPlayerAnimations(this);
         ensureLibraryTextures(this);
 
@@ -99,8 +110,8 @@ export default class LibraryScene extends Phaser.Scene {
         // Camera
         const cam = this.cameras.main;
         cam.setBounds(0, 0, worldW, GAME_H);
-        cam.startFollow(this.player.sprite, true, 0.1, 0.1);
-        cam.fadeIn(900, 255, 240, 210);
+        cam.startFollow(this.player.sprite, true, 0.2, 1);
+        cam.fadeIn(350, 0, 0, 0);
 
         // Interaction
         this.keyE = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.E);
@@ -109,8 +120,12 @@ export default class LibraryScene extends Phaser.Scene {
             fontFamily: FONT, fontSize: '22px', fontStyle: 'bold', color: '#ffffff',
             backgroundColor: '#202350', padding: { x: 14, y: 8 },
         }).setOrigin(0.5, 1).setDepth(40).setVisible(false);
+        this.quoteBox = this.add.text(0, 0, '', {
+            fontFamily: FONT, fontSize: '26px', fontStyle: 'italic', color: '#fff3d6', align: 'center',
+            backgroundColor: 'rgba(26,15,8,0.92)', padding: { x: 22, y: 14 }, wordWrap: { width: 520 }, lineSpacing: 6,
+        }).setOrigin(0.5, 1).setDepth(41).setAlpha(0);
 
-        const hint = this.add.text(30, GAME_H - 40, '← → move    Shift run    ↑ jump    E read', {
+        const hint = this.add.text(30, GAME_H - 40, '← → move    Shift run    ↑ jump    E read    Esc pause', {
             fontFamily: FONT, fontSize: '20px', color: '#fdcffa', stroke: '#000000', strokeThickness: 4,
         }).setScrollFactor(0).setDepth(100);
         this.tweens.add({ targets: hint, alpha: 0, delay: 9000, duration: 1500 });
@@ -160,8 +175,21 @@ export default class LibraryScene extends Phaser.Scene {
 
         if (this.panel.isOpen) {
             this.player.setLocked(true);
+            this.setQuote(undefined);
             return;
         }
+
+        // favourite quote of the book you are walking past (one per book)
+        let qBook: Book | undefined;
+        let qBest = QUOTE_RANGE;
+        for (const b of this.books) {
+            const d = Math.abs(b.x - px);
+            if (d < qBest) {
+                qBest = d;
+                qBook = b;
+            }
+        }
+        this.setQuote(this.leaving ? undefined : qBook);
 
         // nearest book within reach
         let near: Book | undefined;
@@ -191,7 +219,23 @@ export default class LibraryScene extends Phaser.Scene {
         if (!this.leaving && px > this.doorX - 300) {
             this.leaving = true;
             this.tip.setVisible(false);
-            walkThroughDoor(this, this.player, this.door, 'ThunderCaveScene', { fade: [0, 0, 0], zoom: 1.25, shake: true });
+            walkThroughDoor(this, this.player, this.door, 'ThunderCaveScene', CARDS.storm, { zoom: 1.25, shake: true });
         }
+    }
+
+    private setQuote(book: Book | undefined): void {
+        if (book === this.quoteBook) return;
+        this.quoteBook = book;
+        this.tweens.killTweensOf(this.quoteBox);
+        if (!book) {
+            this.tweens.add({ targets: this.quoteBox, alpha: 0, duration: 200 });
+            return;
+        }
+        const q = book.entry.quote;
+        this.quoteBox
+            .setText(`“${q.text}”\n— ${q.author}`)
+            .setPosition(book.x, book.topY - 84)
+            .setAlpha(0);
+        this.tweens.add({ targets: this.quoteBox, alpha: 1, duration: 300 });
     }
 }

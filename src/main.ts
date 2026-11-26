@@ -1,9 +1,14 @@
 import Phaser from 'phaser';
-import PreloadScene from './scenes/PreloadScene';
+import { GRAVITY } from './config';
+import BootScene from './scenes/BootScene';
+import MenuScene from './scenes/MenuScene';
+import LoadingScene from './scenes/LoadingScene';
 import MainScene from './scenes/MainScene';
 import GalleryScene from './scenes/GalleryScene';
 import LibraryScene from './scenes/LibraryScene';
 import ThunderCaveScene from './scenes/ThunderCaveScene';
+import TransitionScene from './scenes/TransitionScene';
+import { initDomUi } from './ui/domUi';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
@@ -15,42 +20,22 @@ const config: Phaser.Types.Core.GameConfig = {
         width: 1920, // your designed width
         height: 1080 // your designed height
     },
+    render: { powerPreference: 'high-performance' }, // ask for the dedicated GPU on laptops
     physics: {
         default: "arcade",
-        arcade: { debug: false, gravity: { x: 0, y: 500 } }
+        arcade: { debug: false, gravity: { x: 0, y: GRAVITY } }
     },
-    scene: [PreloadScene, MainScene, GalleryScene, LibraryScene, ThunderCaveScene]
+    // TransitionScene is last so it always renders above the other scenes.
+    scene: [BootScene, MenuScene, LoadingScene, MainScene, GalleryScene, LibraryScene, ThunderCaveScene, TransitionScene]
 };
 
 /** Wait (max 1.5s) for the web font so in-game text doesn't render in a fallback face. */
 const fontReady = Promise.race([
-    document.fonts.load('bold 24px "Noto Serif JP"', 'Aa').catch(() => undefined),
+    document.fonts.load('bold 24px "Noto Sans JP"', 'Aa').catch(() => undefined),
     new Promise((resolve) => setTimeout(resolve, 1500)),
 ]);
 
 fontReady.then(() => {
     const game = new Phaser.Game(config);
-
-    // Reader Mode (📖) is optional now: while it is open, freeze the game and release the keyboard
-    // so the arrow keys scroll the reader instead of moving the character.
-    const reader = document.getElementById('reader-overlay');
-    if (reader) {
-        let paused: Phaser.Scene[] = [];
-        let wasOpen = false;
-        new MutationObserver(() => {
-            const open = reader.classList.contains('active');
-            if (open === wasOpen) return;
-            wasOpen = open;
-            const kb = game.input.keyboard;
-            if (open) {
-                paused = game.scene.getScenes(true);
-                paused.forEach((s) => s.scene.pause());
-                if (kb) kb.enabled = false;
-            } else {
-                paused.forEach((s) => s.scene.resume());
-                paused = [];
-                if (kb) kb.enabled = true;
-            }
-        }).observe(reader, { attributes: true, attributeFilter: ['class'] });
-    }
+    initDomUi(game);
 });

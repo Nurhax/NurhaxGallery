@@ -1,27 +1,32 @@
 import Phaser from 'phaser';
 import Player from '../player/Player';
 import Doorway from '../objects/Doorway';
+import type TransitionScene from '../scenes/TransitionScene';
+import type { TransitionCard } from '../scenes/TransitionScene';
+
+/** Slide-in chapter card, then start `next` behind it (see TransitionScene). */
+export function changeScene(from: Phaser.Scene, next: string, card: TransitionCard, data?: object): void {
+    (from.scene.get('TransitionScene') as TransitionScene).run(from, next, card, data);
+}
 
 export interface DoorTransitionOptions {
-    fade?: [number, number, number];
     zoom?: number;
     shake?: boolean;
 }
 
 /**
- * Cinematic "walk through the door" transition:
- * door swings open, player walks in and fades out, camera pushes in, then fades to the next scene.
+ * Door cinematic: the door swings open, the player walks in and fades out, the camera pushes in,
+ * then the chapter card slides in and takes over.
  */
 export function walkThroughDoor(
     scene: Phaser.Scene,
     player: Player,
     door: Doorway,
     next: string,
+    card: TransitionCard,
     opts: DoorTransitionOptions = {}
 ): void {
     const cam = scene.cameras.main;
-    const [r, g, b] = opts.fade ?? [0, 0, 0];
-
     player.autoWalk(1);
     door.open();
     scene.tweens.add({ targets: player.sprite, alpha: 0, delay: 650, duration: 450 });
@@ -32,6 +37,5 @@ export function walkThroughDoor(
         player.setLocked(true);
         player.stopAuto();
     });
-    scene.time.delayedCall(1100, () => cam.fadeOut(700, r, g, b));
-    cam.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => scene.scene.start(next));
+    scene.time.delayedCall(1300, () => changeScene(scene, next, card));
 }

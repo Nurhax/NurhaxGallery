@@ -1,5 +1,7 @@
 // Content for the gallery (jobs) and library (projects / art / content).
 // Mirrors the Reader Mode text in index.html.
+//
+// NOTE: the `quote` on every book is a PLACEHOLDER (famous public quotes). Replace each one with your own favourite.
 
 export interface Job {
     title: string;
@@ -104,8 +106,20 @@ export const JOBS: Job[] = [
 
 export type BookKind = 'project' | 'art' | 'content' | 'link';
 
+export interface Quote {
+    text: string;
+    author: string;
+}
+
+export const CV = {
+    path: 'documents/Muhammad_Iqbal_Nurhaq_CV.pdf',
+    filename: 'Muhammad_Iqbal_Nurhaq_CV.pdf',
+};
+
 export interface BookEntry {
     kind: BookKind;
+    /** Shown when the player walks past the book. One per book. */
+    quote: Quote;
     title: string;
     /** Short label printed on the book's spine. */
     spine: string;
@@ -133,6 +147,7 @@ export const LIBRARY: LibrarySection[] = [
         entries: [
             {
                 kind: 'project',
+                quote: { text: 'Wherever the art of medicine is loved, there is also a love of humanity.', author: 'Hippocrates' },
                 title: 'CERDIK',
                 spine: 'CERDIK',
                 blurb:
@@ -145,6 +160,7 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'project',
+                quote: { text: 'No man is an island.', author: 'John Donne' },
                 title: 'Social Palace (SoPal)',
                 spine: 'SoPal',
                 blurb:
@@ -157,6 +173,7 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'project',
+                quote: { text: 'Any sufficiently advanced technology is indistinguishable from magic.', author: 'Arthur C. Clarke' },
                 title: 'Lemmy Bot',
                 spine: 'Lemmy Bot',
                 blurb:
@@ -169,6 +186,7 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'project',
+                quote: { text: 'Not all those who wander are lost.', author: 'J.R.R. Tolkien' },
                 title: 'Pargantara: The Untold Stories',
                 spine: 'Pargantara',
                 blurb:
@@ -181,6 +199,7 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'link',
+                quote: { text: 'Talk is cheap. Show me the code.', author: 'Linus Torvalds' },
                 title: 'All Projects',
                 spine: 'GitHub',
                 blurb: 'The complete shelf: every repository, experiment and half-finished idea lives on my GitHub.',
@@ -196,6 +215,7 @@ export const LIBRARY: LibrarySection[] = [
         entries: [
             {
                 kind: 'art',
+                quote: { text: 'Every artist was first an amateur.', author: 'Ralph Waldo Emerson' },
                 title: 'Kafka — Honkai: Star Rail',
                 spine: 'Kafka',
                 blurb: 'Fan illustration of Kafka from Honkai: Star Rail.',
@@ -206,6 +226,7 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'art',
+                quote: { text: 'Art is not what you see, but what you make others see.', author: 'Edgar Degas' },
                 title: 'Hoshiguma — Arknights',
                 spine: 'Hoshiguma',
                 blurb: 'Fan illustration of Hoshiguma from Arknights.',
@@ -216,6 +237,7 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'art',
+                quote: { text: 'Art enables us to find ourselves and lose ourselves at the same time.', author: 'Thomas Merton' },
                 title: 'Shinobu — Monogatari',
                 spine: 'Shinobu',
                 blurb: 'Fan illustration of Shinobu from the Monogatari series.',
@@ -226,6 +248,7 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'art',
+                quote: { text: 'Creativity takes courage.', author: 'Henri Matisse' },
                 title: 'Hachikuji — Monogatari',
                 spine: 'Hachikuji',
                 blurb: 'Fan illustration of Hachikuji from the Monogatari series.',
@@ -236,13 +259,12 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'link',
+                quote: { text: 'I dream my painting and I paint my dream.', author: 'Vincent van Gogh' },
                 title: 'Full Art Portfolio',
                 spine: 'Instagram',
                 blurb: 'More illustrations, sketches and works in progress.',
                 url: 'https://www.instagram.com/nurhax.dev/',
                 linkLabel: 'Open Instagram',
-                coverKey: 'cover_instagram',
-                coverPath: 'images/Main Logo.png',
             },
         ],
     },
@@ -253,6 +275,7 @@ export const LIBRARY: LibrarySection[] = [
         entries: [
             {
                 kind: 'content',
+                quote: { text: 'Where words fail, music speaks.', author: 'Hans Christian Andersen' },
                 title: 'Fakta Baru [ADO] Yang Harus Kamu Ketahui!',
                 spine: 'ADO Facts',
                 blurb: "A breakdown of ADO's latest facts in 2025, also explaining the implications in her music videos.",
@@ -264,6 +287,7 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'content',
+                quote: { text: 'The heart has its reasons which reason knows nothing of.', author: 'Blaise Pascal' },
                 title: 'FRIENDZONE TERBRUTAL DI ANIME (Hanekawa & Araragi)',
                 spine: 'Friendzone',
                 blurb: 'An exploration of the complex relationship dynamics between Hanekawa and Araragi in the Monogatari series.',
@@ -275,13 +299,12 @@ export const LIBRARY: LibrarySection[] = [
             },
             {
                 kind: 'link',
+                quote: { text: 'Quality means doing it right when no one is looking.', author: 'Henry Ford' },
                 title: 'The @Nurhax Channel',
                 spine: 'YouTube',
                 blurb:
                     'A "philosophical QA approach" to anime and otaku media — because storytelling deserves the same scrutiny and care as software.',
                 url: 'https://www.youtube.com/@Nurhax/',
-                coverKey: 'cover_youtube',
-                coverPath: 'images/Main Logo.png',
                 linkLabel: 'Open channel',
             },
         ],

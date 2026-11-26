@@ -18,7 +18,7 @@ export default class Painting {
 
         this.spot = scene.add
             .image(x, cy + 30, 'glow')
-            .setScale(9.5, 6.4)
+            .setScale(8, 5.4)
             .setBlendMode(Phaser.BlendModes.ADD)
             .setTint(0xffe2b0)
             .setAlpha(0.15)
@@ -31,10 +31,8 @@ export default class Painting {
         const c = scene.add.container(x, cy).setDepth(5);
         this.container = c;
 
-        const outer = scene.add.rectangle(0, 0, PAINTING_W + 60, PAINTING_H + 60, 0x7a5a1a).setStrokeStyle(4, 0xe8c35a);
-        const inner = scene.add.rectangle(0, 0, PAINTING_W + 24, PAINTING_H + 24, 0x3b2a0c).setStrokeStyle(3, 0xc9a23f);
-        const art = scene.add.image(0, 0, texKey);
-        c.add([outer, inner, art]);
+        // frame + art + text panel are baked into one texture (see makePaintingTexture)
+        c.add(scene.add.image(0, 0, texKey));
 
         const left = -PAINTING_W / 2 + 28;
         const top = -PAINTING_H / 2;
@@ -57,11 +55,7 @@ export default class Painting {
             })
         );
 
-        // text panel
         const panelTop = top + 112;
-        const panelH = PAINTING_H - 112;
-        c.add(scene.add.rectangle(0, panelTop + panelH / 2, PAINTING_W, panelH, 0x120f2e, 0.84));
-        c.add(scene.add.rectangle(0, panelTop + 1, PAINTING_W, 3, COLORS.purple, 0.9));
 
         let y = panelTop + 16;
         const wrap = PAINTING_W - 56;
@@ -103,6 +97,8 @@ export default class Painting {
     }
 
     update(playerX: number): void {
+        // far-away paintings don't need per-frame work
+        if (Math.abs(playerX - this.x) > 1400) return;
         const target = 1 - Phaser.Math.Clamp(Math.abs(playerX - this.x) / 700, 0, 1);
         this.focus += (target - this.focus) * 0.08;
         this.spot.setAlpha(0.1 + 0.4 * this.focus);

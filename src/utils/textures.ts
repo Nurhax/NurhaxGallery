@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { mulberry32 } from './rng';
+import { JOBS } from '../data/portfolio';
+import { PAINTING_H, PAINTING_W } from '../objects/Painting';
 
 function newGfx(scene: Phaser.Scene): Phaser.GameObjects.Graphics {
     return scene.make.graphics({ x: 0, y: 0 }, false);
@@ -112,7 +114,10 @@ export function ensureLibraryTextures(scene: Phaser.Scene): void {
     g.destroy();
 }
 
-/** Bakes a stylised "oil painting" landscape into a texture. */
+/**
+ * Bakes a complete painting (gold frame + oil-painting landscape + dark text panel) into ONE texture,
+ * so each painting costs a single draw call at runtime. Final size: (w + 60) x (h + 60).
+ */
 export function makePaintingTexture(
     scene: Phaser.Scene,
     key: string,
@@ -126,24 +131,29 @@ export function makePaintingTexture(
     const hsl = (hh: number, s: number, l: number) =>
         Phaser.Display.Color.HSLToColor(((hh % 360) + 360) % 360 / 360, s, l).color;
     const g = newGfx(scene);
+    const F = 30; // frame thickness
 
+    // frame
+    g.fillStyle(0x7a5a1a, 1).fillRect(0, 0, w + 2 * F, h + 2 * F);
+    g.lineStyle(4, 0xe8c35a, 1).strokeRect(2, 2, w + 2 * F - 4, h + 2 * F - 4);
+    g.fillStyle(0x3b2a0c, 1).fillRect(F - 12, F - 12, w + 24, h + 24);
+    g.lineStyle(3, 0xc9a23f, 1).strokeRect(F - 12, F - 12, w + 24, h + 24);
+
+    // everything below is drawn inside the canvas area, offset by the frame
     const top = hsl(hue, 0.55, 0.16);
     const bottom = hsl(hue + 25, 0.7, 0.45);
-    g.fillGradientStyle(top, top, bottom, bottom, 1).fillRect(0, 0, w, h);
+    g.fillGradientStyle(top, top, bottom, bottom, 1).fillRect(F, F, w, h);
 
-    // sun / moon
-    const sunX = w * (0.15 + rng() * 0.55);
-    const sunY = h * 0.2;
+    const sunX = F + w * (0.15 + rng() * 0.55);
+    const sunY = F + h * 0.2;
     g.fillStyle(hsl(hue + 50, 0.9, 0.8), 0.25).fillCircle(sunX, sunY, 90);
     g.fillStyle(hsl(hue + 50, 0.9, 0.8), 0.9).fillCircle(sunX, sunY, 46);
 
-    // painterly dabs
     for (let i = 0; i < 160; i++) {
         g.fillStyle(hsl(hue + rng() * 80 - 20, 0.7, 0.3 + rng() * 0.4), 0.06 + rng() * 0.1);
-        g.fillEllipse(rng() * w, rng() * h * 0.75, 24 + rng() * 70, 6 + rng() * 14);
+        g.fillEllipse(F + rng() * w, F + rng() * h * 0.75, 24 + rng() * 70, 6 + rng() * 14);
     }
 
-    // mountain layers
     const layers: Array<[number, number, number]> = [
         [h * 0.5, 70, hsl(hue + 10, 0.4, 0.26)],
         [h * 0.62, 55, hsl(hue - 10, 0.45, 0.16)],
@@ -152,17 +162,21 @@ export function makePaintingTexture(
     for (const [baseY, amp, color] of layers) {
         const phase = rng() * 10;
         const freq = 0.006 + rng() * 0.008;
-        const pts: Phaser.Types.Math.Vector2Like[] = [{ x: 0, y: h }];
+        const pts: Phaser.Types.Math.Vector2Like[] = [{ x: F, y: F + h }];
         for (let x = 0; x <= w; x += 30) {
-            pts.push({ x, y: baseY - amp * (0.5 + 0.5 * Math.sin(x * freq + phase)) - rng() * amp * 0.35 });
+            pts.push({ x: F + x, y: F + baseY - amp * (0.5 + 0.5 * Math.sin(x * freq + phase)) - rng() * amp * 0.35 });
         }
-        pts.push({ x: w, y: h });
+        pts.push({ x: F + w, y: F + h });
         g.fillStyle(color, 1).fillPoints(pts, true);
     }
 
-    // frame vignette
-    g.lineStyle(26, 0x000000, 0.22).strokeRect(0, 0, w, h);
-    g.generateTexture(key, w, h);
+    // dark text panel (lower part of the canvas) + purple rule
+    const panelTop = F + 112;
+    g.fillStyle(0x120f2e, 0.84).fillRect(F, panelTop, w, h - 112);
+    g.fillStyle(0x9b5de0, 0.9).fillRect(F, panelTop, w, 3);
+
+    g.lineStyle(26, 0x000000, 0.22).strokeRect(F, F, w, h);
+    g.generateTexture(key, w + 2 * F, h + 2 * F);
     g.destroy();
 }
 
@@ -220,4 +234,24 @@ export function ensureStormAssets(scene: Phaser.Scene): void {
         }
     }
     g.destroy();
+}
+
+/**
+ * Every procedural texture in the game, as small named steps, so the loading screen can run them
+ * one by one and the gameplay scenes never have to generate anything while you are playing.
+ */
+export function getWarmupSteps(scene: Phaser.Scene): Array<[string, () => void]> {
+    const steps: Array<[string, () => void]> = [
+        ['Lighting the lamps', () => ensureGlowTexture(scene)],
+        ['Summoning the storm', () => ensureStormAssets(scene)],
+        ['Hanging the wallpaper', () => ensureGalleryTextures(scene)],
+        ['Stacking the shelves', () => ensureLibraryTextures(scene)],
+    ];
+    JOBS.forEach((job, i) => {
+        steps.push([
+            `Painting ${i + 1} of ${JOBS.length}`,
+            () => makePaintingTexture(scene, `painting_${i}`, PAINTING_W, PAINTING_H, job.hue, 1000 + i * 37),
+        ]);
+    });
+    return steps;
 }

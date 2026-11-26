@@ -16,6 +16,8 @@ const KIND_EMOJI: Record<string, string> = { project: '💻', art: '🎨', conte
 export default class BookPanel {
     private container?: Phaser.GameObjects.Container;
     private entry?: BookEntry;
+    /** scene time (ms) of the last close; lets the pause menu ignore the Esc that closed the book */
+    public closedAt = -1e9;
 
     constructor(private scene: Phaser.Scene, private onClose: () => void) {}
 
@@ -137,6 +139,7 @@ export default class BookPanel {
         kb.off('keydown-ENTER', this.openLink, this);
         this.container.destroy();
         this.container = undefined;
+        this.closedAt = this.scene.time.now;
         this.entry = undefined;
         this.onClose();
     };

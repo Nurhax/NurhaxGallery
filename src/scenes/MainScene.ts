@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import Player from '../player/Player';
 import { FONT } from '../config';
 import { createPlayerAnimations } from '../utils/animations';
+import { changeScene } from '../utils/transitions';
+import { CARDS } from './TransitionScene';
 
 /** Scene 1: the cave. Walk right, toward the light, to leave it. */
 export default class MainScene extends Phaser.Scene {
@@ -67,11 +69,8 @@ export default class MainScene extends Phaser.Scene {
         });
 
         const hint = this.add.text(width - 520, floorTopY - 420, 'Follow the light  →', {
-            fontFamily: 'Kozuka Gothic Pro, Regular',
-            fontSize: '30px',
-            color: '#d78fee',
-            stroke: 'FFFFFF',
-            strokeThickness: 5,
+            fontFamily: FONT, fontSize: '34px', fontStyle: 'bold', color: '#fdcffa', align: 'center',
+            stroke: '#120f2e', strokeThickness: 6,
         }).setOrigin(0.5).setDepth(60).setAlpha(0);
         this.tweens.add({ targets: hint, alpha: 0.9, delay: 2500, duration: 1500, yoyo: true, hold: 3000 });
 
@@ -104,19 +103,20 @@ export default class MainScene extends Phaser.Scene {
         if (px > width - 130) this.beginExit();
     }
 
-    /** Walk into the light: it floods the screen, then we wake up in the gallery. */
+    /** The pause menu must not open during the exit cutscene. */
+    canPause(): boolean {
+        return !this.exiting;
+    }
+
+    /** Walk into the light: it swells while the chapter card slides in over the screen. */
     private beginExit(): void {
         this.exiting = true;
-        this.player.autoWalk(1);
         this.tweens.add({
-            targets: this.exitGlow,
-            scaleX: 24,
-            scaleY: 24,
-            alpha: 1,
-            duration: 1500,
-            ease: 'Cubic.easeIn',
+            targets: this.player.sprite,
+            alpha: 0,
+            duration: 800,
+            ease: 'Sine.easeIn',
+            onComplete: () => changeScene(this, 'GalleryScene', CARDS.gallery),
         });
-        this.time.delayedCall(500, () => this.cameras.main.fadeOut(1000, 255, 255, 255));
-        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => this.scene.start('GalleryScene'));
     }
 }

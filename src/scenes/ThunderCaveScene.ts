@@ -64,6 +64,11 @@ export default class ThunderCaveScene extends Phaser.Scene {
         super('ThunderCaveScene');
     }
 
+    /** Pause is only allowed while playing. Never during game over: name entry, saving or the high-score board. */
+    canPause(): boolean {
+        return this.phase === 'intro' || this.phase === 'playing';
+    }
+
     create(): void {
         const { width, height } = this.scale;
         ensureGlowTexture(this);
@@ -88,7 +93,7 @@ export default class ThunderCaveScene extends Phaser.Scene {
         this.nextSwarmAt = this.time.now + 22000;
 
         this.physics.world.setBounds(0, 0, width, height);
-        this.cameras.main.fadeIn(900, 0, 0, 0);
+        this.cameras.main.fadeIn(350, 0, 0, 0);
 
         // Same cave art as scene 1, tinted stormy blue
         this.add.image(width / 2, height / 2, 'bgShadow').setTint(0x6d7fb8);
@@ -140,7 +145,7 @@ export default class ThunderCaveScene extends Phaser.Scene {
         const intro = this.add.text(width / 2, 250, 'THE STORM VAULT', {
             fontFamily: FONT, fontSize: '72px', fontStyle: 'bold', color: '#cfe3ff', stroke: '#0b1030', strokeThickness: 10,
         }).setOrigin(0.5).setDepth(100);
-        const how = this.add.text(width / 2, 330, 'Z or click — lightning bolt     X — chain lightning     ↑ jump\nSurvive as long as you can.', {
+        const how = this.add.text(width / 2, 330, 'Z or click — lightning bolt     X — chain lightning     ↑ jump     Esc pause\nSurvive as long as you can.', {
             fontFamily: FONT, fontSize: '26px', color: '#ffffff', align: 'center', stroke: '#0b1030', strokeThickness: 5, lineSpacing: 10,
         }).setOrigin(0.5, 0).setDepth(100);
         this.tweens.add({ targets: [intro, how], alpha: 0, delay: 3000, duration: 800, onComplete: () => { intro.destroy(); how.destroy(); } });
@@ -334,7 +339,7 @@ export default class ThunderCaveScene extends Phaser.Scene {
 
         const s = this.player.sprite;
         this.tweens.add({ targets: s, alpha: 0.3, duration: 70, yoyo: true, repeat: 5, onComplete: () => s.setAlpha(1) });
-        if ((s.body as Phaser.Physics.Arcade.Body).blocked.down) s.setVelocityY(-280);
+        if ((s.body as Phaser.Physics.Arcade.Body).blocked.down) s.setVelocityY(-650);
 
         if (this.hp <= 0) this.die();
     }
@@ -444,7 +449,7 @@ export default class ThunderCaveScene extends Phaser.Scene {
         this.player.setLocked(true);
         const s = this.player.sprite;
         s.setTint(0xff5555).setAlpha(1);
-        s.setVelocityY(-320);
+        s.setVelocityY(-600);
         this.tweens.add({ targets: s, angle: 90, duration: 500, ease: 'Sine.easeIn' });
         this.cameras.main.shake(400, 0.012);
         this.time.timeScale = 1;
@@ -531,36 +536,46 @@ export default class ThunderCaveScene extends Phaser.Scene {
         this.phase = 'board';
         this.clearUi();
         const cx = GAME_W / 2;
-        this.track(this.add.rectangle(cx, GAME_H / 2, GAME_W, GAME_H, 0x03050f, 0.88).setDepth(UI_DEPTH));
-        this.track(this.add.text(cx, 130, 'HIGH SCORES', {
-            fontFamily: FONT, fontSize: '60px', fontStyle: 'bold', color: '#fff7a8', stroke: '#0b1030', strokeThickness: 8,
-        }).setOrigin(0.5).setDepth(UI_DEPTH + 1));
-        this.track(this.add.text(cx, 190, board.source === 'global' ? 'GLOBAL' : 'THIS BROWSER', {
-            fontFamily: FONT, fontSize: '20px', color: '#9fb4e0',
-        }).setOrigin(0.5).setDepth(UI_DEPTH + 1));
+        const rows = Math.max(board.entries.length, 1);
+        const ROW_H = 50;
+        // Whole block (title -> rows -> score -> buttons) is centred vertically on the screen.
+        const blockH = 130 + rows * ROW_H + 40 + 60 + 30;
+        const top = Math.max(30, (GAME_H - blockH) / 2);
+        const D = UI_DEPTH + 1;
 
+        this.track(this.add.rectangle(cx, GAME_H / 2, GAME_W, GAME_H, 0x03050f, 0.88).setDepth(UI_DEPTH));
+        this.track(this.add.text(cx, top + 35, 'HIGH SCORES', {
+            fontFamily: FONT, fontSize: '60px', fontStyle: 'bold', color: '#fff7a8', stroke: '#0b1030', strokeThickness: 8,
+        }).setOrigin(0.5).setDepth(D));
+        this.track(this.add.text(cx, top + 92, board.source === 'global' ? 'GLOBAL' : 'THIS BROWSER', {
+            fontFamily: FONT, fontSize: '20px', color: '#9fb4e0',
+        }).setOrigin(0.5).setDepth(D));
+
+        const rowsTop = top + 130;
         if (!board.entries.length) {
-            this.track(this.add.text(cx, 400, 'No scores yet.', { fontFamily: FONT, fontSize: '30px', color: '#cfe3ff' }).setOrigin(0.5).setDepth(UI_DEPTH + 1));
+            this.track(this.add.text(cx, rowsTop + ROW_H / 2, 'No scores yet.', { fontFamily: FONT, fontSize: '30px', color: '#cfe3ff' }).setOrigin(0.5).setDepth(D));
         }
         board.entries.forEach((e, i) => {
             const mine = !!this.lastEntry && e.date === this.lastEntry.date && e.name === this.lastEntry.name && e.score === this.lastEntry.score;
-            const color = mine ? '#fdcffa' : '#ffffff';
-            const y = 250 + i * 56;
-            const st = { fontFamily: FONT, fontSize: '32px', fontStyle: mine ? 'bold' : 'normal', color };
-            this.track(this.add.text(cx - 300, y, `${i + 1}.`, st).setOrigin(1, 0).setDepth(UI_DEPTH + 1));
-            this.track(this.add.text(cx - 270, y, e.name, st).setDepth(UI_DEPTH + 1));
-            this.track(this.add.text(cx + 300, y, String(e.score).padStart(6, '0'), st).setOrigin(1, 0).setDepth(UI_DEPTH + 1));
+            const st = { fontFamily: FONT, fontSize: '32px', fontStyle: mine ? 'bold' : 'normal', color: mine ? '#fdcffa' : '#ffffff' };
+            const y = rowsTop + i * ROW_H;
+            this.track(this.add.text(cx - 300, y, `${i + 1}.`, st).setOrigin(1, 0).setDepth(D));
+            this.track(this.add.text(cx - 270, y, e.name, st).setDepth(D));
+            this.track(this.add.text(cx + 300, y, String(e.score).padStart(6, '0'), st).setOrigin(1, 0).setDepth(D));
         });
 
-        this.track(this.add.text(cx, GAME_H - 130, `Your score: ${this.score}`, {
-            fontFamily: FONT, fontSize: '28px', color: '#fff7a8',
-        }).setOrigin(0.5).setDepth(UI_DEPTH + 1));
-        const again = this.track(this.add.text(cx - 40, GAME_H - 70, 'R — play again', {
-            fontFamily: FONT, fontSize: '26px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#2f5fb0', padding: { x: 16, y: 8 },
-        }).setOrigin(1, 0.5).setDepth(UI_DEPTH + 1).setInteractive({ useHandCursor: true }));
-        const home = this.track(this.add.text(cx + 40, GAME_H - 70, 'M — back to the cave', {
-            fontFamily: FONT, fontSize: '26px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#7b3fd1', padding: { x: 16, y: 8 },
-        }).setOrigin(0, 0.5).setDepth(UI_DEPTH + 1).setInteractive({ useHandCursor: true }));
+        // score + buttons sit right under the list, centred as a group
+        const scoreY = rowsTop + rows * ROW_H + 40;
+        this.track(this.add.text(cx, scoreY, `Your score: ${this.score}`, {
+            fontFamily: FONT, fontSize: '30px', fontStyle: 'bold', color: '#fff7a8',
+        }).setOrigin(0.5).setDepth(D));
+        const btnY = scoreY + 66;
+        const again = this.track(this.add.text(cx - 14, btnY, 'R — Play Again', {
+            fontFamily: FONT, fontSize: '26px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#2f5fb0', padding: { x: 18, y: 10 },
+        }).setOrigin(1, 0.5).setDepth(D).setInteractive({ useHandCursor: true }));
+        const home = this.track(this.add.text(cx + 14, btnY, 'M — Back to Cave', {
+            fontFamily: FONT, fontSize: '26px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#7b3fd1', padding: { x: 18, y: 10 },
+        }).setOrigin(0, 0.5).setDepth(D).setInteractive({ useHandCursor: true }));
         again.on('pointerdown', this.playAgain);
         home.on('pointerdown', this.backToStart);
         const kb = this.input.keyboard!;
