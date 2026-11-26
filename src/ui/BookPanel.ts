@@ -58,7 +58,7 @@ export default class BookPanel {
             c.add(scene.add.image(lx, cy, entry.coverKey).setDisplaySize(w, h));
         } else {
             c.add(scene.add.rectangle(lx, cy, 480, 560, color, 0.9).setStrokeStyle(4, 0x2b1d3a));
-            c.add(scene.add.text(lx, cy - 40, KIND_EMOJI[entry.kind] ?? '📖', { fontFamily: 'sans-serif', fontSize: '150px' }).setOrigin(0.5));
+            c.add(scene.add.text(lx, cy - 40, KIND_EMOJI[entry.kind] ?? '📖', { fontFamily: FONT, fontSize: '150px' }).setOrigin(0.5));
             c.add(
                 scene.add
                     .text(lx, cy + 120, entry.spine, { fontFamily: FONT, fontSize: '40px', fontStyle: 'bold', color: '#ffffff', align: 'center' })

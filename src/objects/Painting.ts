@@ -40,7 +40,7 @@ export default class Painting {
         // watermark emoji + date over the sky
         c.add(
             scene.add
-                .text(PAINTING_W / 2 - 100, top + 62, job.emoji, { fontFamily: 'sans-serif', fontSize: '96px' })
+                .text(PAINTING_W / 2 - 100, top + 62, job.emoji, { fontFamily: FONT, fontSize: '96px' })
                 .setOrigin(0.5)
                 .setAlpha(0.5)
         );
