@@ -8,10 +8,9 @@ export function createPlayerAnimations(scene: Phaser.Scene): void {
     ];
     for (const [tex, key] of pairs) {
         if (scene.anims.exists(key) || !scene.textures.exists(tex)) continue;
-        const total = scene.textures.get(tex).frameTotal;
         scene.anims.create({
             key,
-            frames: scene.anims.generateFrameNumbers(tex, { start: 0, end: Math.max(0, total - 1) }),
+            frames: scene.anims.generateFrameNumbers(tex),
             frameRate: 12,
             repeat: -1,
         });

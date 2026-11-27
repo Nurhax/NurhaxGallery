@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { mulberry32 } from './rng';
-import { JOBS } from '../data/portfolio';
+import { JOBS, Job } from '../data/portfolio';
+import { FONT } from '../config';
 import { PAINTING_H, PAINTING_W } from '../objects/Painting';
 
 function newGfx(scene: Phaser.Scene): Phaser.GameObjects.Graphics {
@@ -114,11 +115,8 @@ export function ensureLibraryTextures(scene: Phaser.Scene): void {
     g.destroy();
 }
 
-/**
- * Bakes a complete painting (gold frame + oil-painting landscape + dark text panel) into ONE texture,
- * so each painting costs a single draw call at runtime. Final size: (w + 60) x (h + 60).
- */
-export function makePaintingTexture(
+/** Gold frame + oil-painting landscape + dark text panel (no text yet). Size: (w + 60) x (h + 60). */
+function bakePaintingArt(
     scene: Phaser.Scene,
     key: string,
     w: number,
@@ -171,13 +169,103 @@ export function makePaintingTexture(
     }
 
     // dark text panel (lower part of the canvas) + purple rule
-    const panelTop = F + 112;
-    g.fillStyle(0x120f2e, 0.84).fillRect(F, panelTop, w, h - 112);
+    const panelTop = F + 200;
+    g.fillStyle(0x120f2e, 0.84).fillRect(F, panelTop, w, h - 200);
     g.fillStyle(0x9b5de0, 0.9).fillRect(F, panelTop, w, 3);
 
     g.lineStyle(26, 0x000000, 0.22).strokeRect(F, F, w, h);
     g.generateTexture(key, w + 2 * F, h + 2 * F);
     g.destroy();
+}
+
+
+/**
+ * Builds one complete painting texture: frame + art (see bakePaintingArt) + title, company and date
+ * drawn with the canvas 2D API. A painting is therefore a SINGLE image at runtime (no Text objects,
+ * no containers); the full job description lives in the reader panel (BookPanel.openJob).
+ * Final size: (PAINTING_W + 60) x (PAINTING_H + 60).
+ */
+export function makePaintingTexture(scene: Phaser.Scene, key: string, job: Job, index: number, total: number): void {
+    if (scene.textures.exists(key)) return;
+    const w = PAINTING_W;
+    const h = PAINTING_H;
+    const F = 30;
+    const artKey = `${key}_art`;
+    bakePaintingArt(scene, artKey, w, h, job.hue, 1000 + index * 37);
+
+    const tex = scene.textures.createCanvas(key, w + 2 * F, h + 2 * F);
+    if (!tex) return;
+    const ctx = tex.getContext();
+    ctx.drawImage(scene.textures.get(artKey).getSourceImage() as CanvasImageSource, 0, 0);
+    scene.textures.remove(artKey);
+
+    const wrapLines = (text: string, maxW: number): string[] => {
+        const lines: string[] = [];
+        let line = '';
+        for (const word of text.split(' ')) {
+            const test = line ? `${line} ${word}` : word;
+            if (line && ctx.measureText(test).width > maxW) {
+                lines.push(line);
+                line = word;
+            } else {
+                line = test;
+            }
+        }
+        if (line) lines.push(line);
+        return lines;
+    };
+
+    const left = F + 28;
+    const maxW = w - 56;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.lineJoin = 'round';
+
+    // date (top-left, over the sky)
+    ctx.font = `bold 28px ${FONT}`;
+    ctx.lineWidth = 7;
+    ctx.strokeStyle = '#120f2e';
+    ctx.fillStyle = '#fdcffa';
+    ctx.strokeText(job.date.toUpperCase(), left, F + 50);
+    ctx.fillText(job.date.toUpperCase(), left, F + 50);
+
+    // watermark emoji (top-right)
+    ctx.save();
+    ctx.globalAlpha = 0.55;
+    ctx.font = '110px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(job.emoji, F + w - 100, F + 120);
+    ctx.restore();
+
+    // title: shrink until it fits in two lines
+    const panelTop = F + 200;
+    let size = 46;
+    let lines: string[] = [];
+    for (; size >= 34; size -= 2) {
+        ctx.font = `bold ${size}px ${FONT}`;
+        lines = wrapLines(job.title, maxW);
+        if (lines.length <= 2) break;
+    }
+    ctx.fillStyle = '#ffffff';
+    let y = panelTop + 24 + size;
+    for (const ln of lines.slice(0, 2)) {
+        ctx.fillText(ln, left, y);
+        y += size + 10;
+    }
+
+    // company
+    ctx.font = `32px ${FONT}`;
+    ctx.fillStyle = '#fdcffa';
+    ctx.fillText(job.company, left, y + 4);
+
+    // footer
+    ctx.font = `20px ${FONT}`;
+    ctx.fillStyle = '#9fb4e0';
+    ctx.fillText('Press E for details', left, F + h - 16);
+    ctx.textAlign = 'right';
+    ctx.fillText(`${index + 1} / ${total}`, F + w - 28, F + h - 16);
+
+    tex.refresh();
 }
 
 /** Lightning bolt projectile + bat enemies (+ animations) for the storm cave. */
@@ -250,7 +338,7 @@ export function getWarmupSteps(scene: Phaser.Scene): Array<[string, () => void]>
     JOBS.forEach((job, i) => {
         steps.push([
             `Painting ${i + 1} of ${JOBS.length}`,
-            () => makePaintingTexture(scene, `painting_${i}`, PAINTING_W, PAINTING_H, job.hue, 1000 + i * 37),
+            () => makePaintingTexture(scene, `painting_${i}`, job, i, JOBS.length),
         ]);
     });
     return steps;

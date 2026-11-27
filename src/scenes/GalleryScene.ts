@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import Player from '../player/Player';
-import Painting, { PAINTING_H, PAINTING_W } from '../objects/Painting';
+import Painting, { PAINTING_W } from '../objects/Painting';
 import Doorway from '../objects/Doorway';
 import CvStation from '../objects/CvStation';
-import { COLORS, FONT, GAME_H, GROUND_Y } from '../config';
+import BookPanel from '../ui/BookPanel';
+import { FONT, GAME_H, GROUND_Y } from '../config';
 import { CV, JOBS } from '../data/portfolio';
 import { createPlayerAnimations } from '../utils/animations';
 import { downloadFile } from '../utils/download';
@@ -15,6 +16,8 @@ const MIN_FIRST_X = 1400;
 const SPACING = 1000;
 const PAINTING_CY = 430;
 const CV_REACH = 170;
+/** How close (px) you must stand to a painting to read it with E. */
+const PAINTING_REACH = 330;
 
 /** Scene 2: art gallery, one big painting per job, then a CV pedestal, then a door into the library. */
 export default class GalleryScene extends Phaser.Scene {
@@ -27,20 +30,23 @@ export default class GalleryScene extends Phaser.Scene {
     private keyE!: Phaser.Input.Keyboard.Key;
     private tip!: Phaser.GameObjects.Text;
     private tipLockUntil = 0;
+    private panel!: BookPanel;
+    private focusPainting?: Painting;
 
     constructor() {
         super('GalleryScene');
     }
 
-    /** Used by the pause controller: no pausing during the door cutscene. */
+    /** No pausing during the door cutscene, or on the same Esc press that closed a painting's details. */
     canPause(): boolean {
-        return !this.leaving;
+        return !this.leaving && !this.panel?.isOpen && this.time.now - (this.panel?.closedAt ?? -1e9) > 250;
     }
 
     create(): void {
         this.leaving = false;
         this.paintings = [];
         this.tipLockUntil = 0;
+        this.focusPainting = undefined;
         createPlayerAnimations(this);
         ensureGlowTexture(this);
         ensureGalleryTextures(this); // no-ops when the loading screen already did the work
@@ -74,8 +80,8 @@ export default class GalleryScene extends Phaser.Scene {
         // Paintings (oldest -> newest)
         JOBS.forEach((job, i) => {
             const key = `painting_${i}`;
-            makePaintingTexture(this, key, PAINTING_W, PAINTING_H, job.hue, 1000 + i * 37);
-            this.paintings.push(new Painting(this, firstX + SPACING * i, PAINTING_CY, job, key, i, JOBS.length));
+            makePaintingTexture(this, key, job, i, JOBS.length); // no-op if the loading screen already made it
+            this.paintings.push(new Painting(this, firstX + SPACING * i, PAINTING_CY, job, key, (p) => this.openPainting(p)));
         });
 
         // Benches between paintings
@@ -100,20 +106,26 @@ export default class GalleryScene extends Phaser.Scene {
         this.player.sprite.setDepth(10);
         this.physics.add.collider(this.player.sprite, ground);
 
-        // Camera: tighter follow so scrolling keeps up with the player (was 0.1 = ~60px of trailing lag)
+        // Smooth movement on long scrolling levels:
+        //  - Arcade physics defaults to 60 fixed steps/s. On 120/144 Hz screens (or when a frame arrives a bit
+        //    early/late) some frames get 0 or 2 steps, so the player and a camera locked to it (lerp 1)
+        //    visibly stutter. Running physics at 240 steps/s makes every rendered frame get fresh positions.
+        //  - A light lerp (0.35) lets the camera absorb any remaining jitter while trailing only ~10px.
+        this.physics.world.setFPS(240);
         const cam = this.cameras.main;
         cam.setBounds(0, 0, worldW, GAME_H);
-        cam.startFollow(this.player.sprite, true, 0.2, 1);
+        cam.startFollow(this.player.sprite, true, 0.35, 1);
         cam.fadeIn(350, 0, 0, 0);
 
         this.keyE = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        this.panel = new BookPanel(this, () => this.player.setLocked(false));
         this.tip = this.add.text(0, 0, '', {
             fontFamily: FONT, fontSize: '22px', fontStyle: 'bold', color: '#ffffff',
             backgroundColor: '#202350', padding: { x: 14, y: 8 },
         }).setOrigin(0.5, 1).setDepth(40).setVisible(false);
 
         // Controls hint
-        const hint = this.add.text(30, GAME_H - 40, '← → move    Shift run    ↑ jump    E interact    Esc pause', {
+        const hint = this.add.text(30, GAME_H - 40, '← → move    Shift run    ↑ jump    E read / interact    Esc pause', {
             fontFamily: FONT, fontSize: '20px', color: '#fdcffa', stroke: '#000000', strokeThickness: 4,
         }).setScrollFactor(0).setDepth(100);
         this.tweens.add({ targets: hint, alpha: 0, delay: 9000, duration: 1500 });
@@ -124,7 +136,13 @@ export default class GalleryScene extends Phaser.Scene {
         this.add.rectangle(x, y - 62, 240, 20, 0x5a3a22).setStrokeStyle(2, 0x2f1c10).setDepth(3);
         this.add.rectangle(x - 100, y - 30, 14, 60, 0x2f1c10).setDepth(3);
         this.add.rectangle(x + 100, y - 30, 14, 60, 0x2f1c10).setDepth(3);
-        this.add.rectangle(x, y - 94, 240, 8, COLORS.purple, 0).setDepth(3);
+    }
+
+    private openPainting(p: Painting): void {
+        if (this.panel.isOpen || this.leaving) return;
+        this.player.setLocked(true);
+        this.tip.setVisible(false);
+        this.panel.openJob(p.job, p.texKey);
     }
 
     private downloadCv(): void {
@@ -139,10 +157,32 @@ export default class GalleryScene extends Phaser.Scene {
         const pressedE = Phaser.Input.Keyboard.JustDown(this.keyE); // consume every frame
         this.paintings.forEach((p) => p.update(px));
 
-        // CV pedestal
-        const nearCv = !this.leaving && Math.abs(px - this.cv.x) < CV_REACH;
+        if (this.panel.isOpen) {
+            this.player.setLocked(true);
+            this.tip.setVisible(false);
+            return;
+        }
+
+        // nearest painting within reach
+        let nearP: Painting | undefined;
+        let best = PAINTING_REACH;
+        for (const p of this.paintings) {
+            const d = Math.abs(p.x - px);
+            if (d < best) {
+                best = d;
+                nearP = p;
+            }
+        }
+        if (this.leaving) nearP = undefined;
+        this.focusPainting = nearP;
+
+        const nearCv = !this.leaving && !nearP && Math.abs(px - this.cv.x) < CV_REACH;
         this.cv.setFocused(nearCv);
-        if (nearCv) {
+
+        if (nearP) {
+            this.tip.setText(`E — read the details: ${nearP.job.title}`).setPosition(nearP.x, 752).setVisible(true);
+            if (pressedE) this.openPainting(nearP);
+        } else if (nearCv) {
             if (time > this.tipLockUntil) this.tip.setText('E — download my CV (PDF)');
             this.tip.setPosition(this.cv.x, this.cv.topY).setVisible(true);
             if (pressedE && time > this.tipLockUntil) this.downloadCv();

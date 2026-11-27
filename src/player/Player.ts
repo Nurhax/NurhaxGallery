@@ -8,6 +8,7 @@ const CUT_EXTRA = 3800; //        releasing Up early cuts the jump short
 const MAX_FALL = 1400;
 const COYOTE_MS = 90; //          can still jump this long after leaving a ledge
 const BUFFER_MS = 110; //         a jump pressed this early before landing still counts
+const HORIZONTAL_RESPONSE_MS = 80;
 
 export default class Player {
     public sprite: Phaser.Physics.Arcade.Sprite;
@@ -79,20 +80,22 @@ export default class Player {
         }
 
         const speed = sprint ? sprintSpeed : baseSpeed;
+        const targetVelocityX = dir * speed;
+        const delta = Math.min(this.scene.game.loop.delta, 50);
+        const velocityBlend = 1 - Math.exp(-delta / HORIZONTAL_RESPONSE_MS);
+        body.setVelocityX(Phaser.Math.Linear(body.velocity.x, targetVelocityX, velocityBlend));
 
-        if (dir !== 0) {
-            this.sprite.setVelocityX(dir * speed);
-            this.facing = dir < 0 ? 'left' : 'right';
-            const key = dir < 0 ? 'run_left' : 'run_right';
-            if (this.scene.anims.exists(key)) {
+        if (dir !== 0 || Math.abs(body.velocity.x) > 5) {
+            if (dir !== 0) this.facing = dir < 0 ? 'left' : 'right';
+            const animationKey = this.facing === 'left' ? 'run_left' : 'run_right';
+            if (this.scene.anims.exists(animationKey)) {
                 this.sprite.setFlipX(false);
-                this.sprite.anims.play(key, true);
+                this.sprite.anims.play(animationKey, true);
                 this.sprite.anims.timeScale = sprint ? sprintFrameRate / baseFrameRate : 1;
             } else {
-                this.sprite.setTexture(dir < 0 ? 'player_left' : 'player_right');
+                this.sprite.setTexture(this.facing === 'left' ? 'player_left' : 'player_right');
             }
         } else {
-            this.sprite.setVelocityX(0);
             if (this.sprite.anims.isPlaying) this.sprite.anims.stop();
             const idle = this.facing === 'left' ? 'player_left' : 'player_right';
             if (this.sprite.texture.key !== idle) this.sprite.setTexture(idle);
